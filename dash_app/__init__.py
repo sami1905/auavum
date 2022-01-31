@@ -13,8 +13,8 @@ import dash_html_components as html
 # app.title = 'Auswertung und Analyse von Umfragen'
 
 def create_dash_app(flask_app):
-    dash_app =  dash.Dash(server=flask_app,name="auavum", 
-                            url_base_pathname="/start/", 
+    dash_app =  dash.Dash(server=flask_app,name="auavum-app", 
+                            url_base_pathname="/", 
                             external_stylesheets=[dbc.themes.BOOTSTRAP],
                             meta_tags=[{'name': 'viewport',
                                     'content': 'width=device-width, initial-scale=1.0'}])
