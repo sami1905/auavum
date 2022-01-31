@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # # dash app
 # import dash
 # from dash.dependencies import Input, Output
@@ -19,6 +20,30 @@
 #                             meta_tags=[{'name': 'viewport',
 #                                     'content': 'width=device-width, initial-scale=1.0'}])
 #     dash_app.title = 'Auswertung und Analyse von Umfragen'
+=======
+# dash app
+import dash
+from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+import dash_html_components as html
+
+
+# app = dash.Dash(__name__, suppress_callback_exceptions=True,
+#                 external_stylesheets=[dbc.themes.BOOTSTRAP],
+#                 meta_tags=[{'name': 'viewport',
+#                             'content': 'width=device-width, initial-scale=1.0'}])
+# app.title = 'Auswertung und Analyse von Umfragen'
+
+def create_dash_app(flask_app):
+    dash_app =  dash.Dash(server=flask_app,name="auavum", 
+                            url_base_pathname="/start/", 
+                            external_stylesheets=[dbc.themes.BOOTSTRAP],
+                            meta_tags=[{'name': 'viewport',
+                                    'content': 'width=device-width, initial-scale=1.0'}])
+    dash_app.title = 'Auswertung und Analyse von Umfragen'
+>>>>>>> parent of e796677 (integrate the dash app)
+
     
 #     dash_app.layout = dbc.Container([
 #         # dcc.Location(id='url', refresh=False),

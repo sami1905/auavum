@@ -38,6 +38,11 @@ app.layout = dbc.Container([
 
                 
     ], className='content', fluid=True)
+@app.route("/")
+def hello():
+    return "<h1>Wartungsmodus!</h1><p>Auf der Website finden zur Zeit Wartungsarbeiten statt!Die Website ist deshalb bis auf weiteres nicht verfügbar.</p>"
+
+create_dash_app(app)
 
 
 if __name__ == "__main__":
