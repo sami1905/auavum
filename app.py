@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "<h1>Hello there!</h1>"
+    return create_dash_app(app)
 
-create_dash_app(app)
+
 
 
 if __name__ == "__main__":
