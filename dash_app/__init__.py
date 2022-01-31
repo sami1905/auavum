@@ -29,10 +29,10 @@ def create_dash_app(flask_app):
         html.Div(id='page-content', children=[], className='page-content'),
         html.Div(id='max-screen', 
                 children=[
-                    html.H1('Wartungsmodus!', style={'font-size':'100px', 'margin':'40px'}),
+                    html.H1('Das ist die Dash-App!', style={'font-size':'100px', 'margin':'40px'}),
                     #html.Img(src='../assets/img/max_size.png', height='400px'),
-                    html.H2('Auf der Website finden zur Zeit Wartungsarbeiten statt!', style={'font-size':'30px', 'margin':'30px'}),
-                    html.P('Die Website ist deshalb bis auf weiteres nicht verfügbar.',
+                    html.H2('Staaaaart!', style={'font-size':'30px', 'margin':'30px'}),
+                    html.P('Yeeah.',
                 className='card-text1')], className='max-screen'),
 
                 
