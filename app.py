@@ -2,8 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 
-from sent2vec.vectorizer import Vectorizer
-vectorizer = Vectorizer()
+
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True,
                 external_stylesheets=[dbc.themes.BOOTSTRAP],
