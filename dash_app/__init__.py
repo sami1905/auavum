@@ -14,7 +14,7 @@ import dash_html_components as html
 
 def create_dash_app(flask_app):
     dash_app =  dash.Dash(server=flask_app,name="auavum", 
-                            url_base_pathname="/", 
+                            url_base_pathname="/start/", 
                             external_stylesheets=[dbc.themes.BOOTSTRAP],
                             meta_tags=[{'name': 'viewport',
                                     'content': 'width=device-width, initial-scale=1.0'}])
