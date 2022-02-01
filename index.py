@@ -1,20 +1,21 @@
+#127.0.0.1:5000
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 
 #connect to main app.py file and to apps
-from app import app, server
-#from apps import chart_dashboard, clustering, data_preparation, profiling, upload_file, error, method_lobby, interactive_charts
+from app import app
+from apps import upload_file
 
 
 
 app.layout = dbc.Container([
-    # dcc.Location(id='url', refresh=False),
-    # dcc.Store(id='main_data', storage_type='session'),
-    # dcc.Store(id='main_data_after_preperation', storage_type='session'),
-    # dcc.Store(id='listOfFrei', storage_type='session'),
-    # dcc.Store(id='listOfFest', storage_type='session'),
+    dcc.Location(id='url', refresh=False),
+    dcc.Store(id='main_data', storage_type='session'),
+    dcc.Store(id='main_data_after_preperation', storage_type='session'),
+    dcc.Store(id='listOfFrei', storage_type='session'),
+    dcc.Store(id='listOfFest', storage_type='session'),
     html.Div(id='page-content', children=[], className='page-content'),
     html.Div(id='max-screen', 
             children=[html.H1('Fenstergröße anpassen!', style={'font-size':'100px', 'margin':'40px'}),
@@ -28,11 +29,11 @@ app.layout = dbc.Container([
 
 ## File-Structure
 
-# @app.callback(Output(component_id='page-content', component_property='children'),
-#                 [Input(component_id='url',component_property='pathname')])
-# def display_page(pathname):
-#     if pathname == '/':
-#         return upload_file.layout
+@app.callback(Output(component_id='page-content', component_property='children'),
+                 [Input(component_id='url',component_property='pathname')])
+def display_page(pathname):
+     if pathname == '/':
+        return upload_file.layout
 #     if pathname == '/daten-vorbereiten':
 #         return data_preparation.layout
 #     if pathname == '/verfahren-waehlen':
