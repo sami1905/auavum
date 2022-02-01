@@ -1,13 +1,51 @@
 @font-face {
-    font-family: 'Dax';
+    font-family: 'dax-regularregular';
+    src: url('../fonts/dax-webfont.woff') format('woff2'),
+         url('../fonts/daxregular-webfont.woff') format('woff');
+    font-weight: normal;
     font-style: normal;
-    font-weight: 400;
-    src: local('Dax'), url(..\fonts\Dax.ttf) format('ttf');
+
+}
+
+@font-face {
+    font-family: 'dax-mediumregular';
+    src: url('../fonts/daxmedium-webfont.woff2') format('woff2'),
+         url('../fonts/daxmedium-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'dax-lightregular';
+    src: url('../fonts/daxlight-webfont.woff2') format('woff2'),
+         url('../fonts/daxlight-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'dax-boldregular';
+    src: url('../fonts/daxbold-webfont.woff2') format('woff2'),
+         url('../fonts/daxbold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'daxregular';
+    src: url('../fonts/dax-webfont.woff2') format('woff2'),
+         url('../fonts/dax-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
 }
 /*global alles in einer .py*/
 .content {
     background: #f2f2f2;
-    font-family: Dax, Arial, Helvetica, sans-serif;
+    font-family: "daxregular", Arial, Helvetica, sans-serif;
     color: #3c4143;
     height: 100vh;
 }
@@ -191,7 +229,7 @@
 
 .data-card{
     background: white;
-    font-family: Dax, Arial, Helvetica, sans-serif;
+    font-family: "dax-lightregular", Arial, Helvetica, sans-serif;
     color: #3c4143;
     margin: 20px 20px 20px 20px;
     position: relative;
@@ -207,7 +245,7 @@
 
 .setting-card{  
     background: white;
-    font-family: Dax, Arial, Helvetica, sans-serif;
+    font-family: "dax-lightregular", Arial, Helvetica, sans-serif;
     color: #3c4143;
     margin: 20px 20px 20px 20px;
     position: relative;
@@ -220,7 +258,7 @@
 
 .lobby-card{
     background: white;
-    font-family: Dax, Arial, Helvetica, sans-serif;
+    font-family: "dax-lightregular", Arial, Helvetica, sans-serif;
     color: #3c4143;
     margin: 20px 20px 20px 20px;
     position: relative;
@@ -254,7 +292,7 @@
 
 .deskriptiv-card {
     background: white;
-    font-family: Dax, Arial, Helvetica, sans-serif;
+    font-family: "dax-lightregular", Arial, Helvetica, sans-serif;
     color: #3c4143;
     margin: 20px;
     text-align: center;
@@ -262,7 +300,7 @@
 
 .interactive-card {
     background: white;
-    font-family: Dax, Arial, Helvetica, sans-serif;
+    font-family: "dax-lightregular", Arial, Helvetica, sans-serif;
     color: #3c4143;
     margin: 20px;
     text-align: left;
