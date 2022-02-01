@@ -6,7 +6,7 @@ import dash_html_components as html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import upload_file, error
+from apps import upload_file, error, wartung
 
 
 
@@ -33,7 +33,8 @@ app.layout = dbc.Container([
                  [Input(component_id='url',component_property='pathname')])
 def display_page(pathname):
     if pathname == '/':
-        return upload_file.layout
+        return wartung.layout
+#        return upload_file.layout
 #     if pathname == '/daten-vorbereiten':
 #         return data_preparation.layout
 #     if pathname == '/verfahren-waehlen':
