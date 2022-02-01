@@ -1,0 +1,424 @@
+/*global alles in einer .py*/
+.content {
+    background: #f2f2f2;
+    font-family: Dax, Arial, Helvetica, sans-serif;
+    color: #3c4143;
+    height: 100vh;
+}
+.max-screen{
+    background: #f2f2f2be;
+    display: none;
+    text-align: center;
+    height: 100vh; 
+    width: 100%;
+    padding: 50px;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.progress-row {
+    text-align: center;
+    height: 220px;
+}
+
+.progress-img {
+    margin: 80px 0 0 0;
+}
+
+/* url-layout*/
+.page-content{
+    
+    width: 100vw;
+    position: relative;
+    
+    margin-left: -50vw;
+    left: 50%;
+    
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+.page-content P{
+    white-space:pre-wrap
+}
+
+/*header aller .py */
+.header {
+    background: #3c4143;
+    text-align: center;
+    border-bottom: 2px #ff0000 solid;
+    padding: 10px 0px 10px 0px;
+    color: #f2f2f2;
+     
+}
+
+.header h1{
+    margin-top: 10px;
+    color: #f2f2f2;
+    text-decoration: none;
+}
+
+
+
+
+
+/*upload_file.py*/
+.upload-alert {
+    text-align: left;
+    margin: 10px 0 0 0;
+    padding: 10px 0 0 15px;
+}
+
+.alert-headline img {
+   margin: 3.5px 5px 0 3px;
+}
+
+
+.file-upload {
+    text-align: center;
+    padding: 20px;
+    color: #3c4143;
+}
+
+
+
+
+.file-upload-img{
+    display: block;
+    margin: 20px auto 20px auto;
+    width: 76px;
+}
+
+.upload-info{
+    text-align: left;
+    margin: 0 50px 0 50px;
+}
+.upload-info img {
+    margin: 7px 5px 0 0;
+ }
+
+
+.upload-card{
+    background: white;
+    border: 2px #3c4143 dashed;
+    border-radius: 3px 15px 5px 30px;
+    box-shadow: 0 0 15px 1px#3c41434d;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+.figures {
+    
+    margin:5px auto 5px auto ;
+    text-align: center;
+    
+    
+    
+}
+
+.new_graph{
+    width: 1000px;
+    
+    cursor: pointer;
+    text-align: center;
+    padding:10px;
+    
+    margin: auto;
+    
+}
+
+
+
+.figure {
+    width: 1000px;
+    padding:10px;
+    margin-top:5px;
+
+    
+}
+
+
+/* dropdown */
+.dropdown {
+    color: #3c4143;
+    background-color: white;
+    font-size: 14px;
+}
+.dropdown .Select-control {
+    background-color: white;
+    border-radius: 0;
+    border:0;
+    color: #3c4143;
+    }
+
+
+.card-title{
+    
+    font-size: 18px;
+}
+.card-text1{
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.card-text2{
+    font-size: 14px;
+    color: #3c4143;
+    margin-bottom: 5px;
+}
+.card-text3{
+    font-size: 14px;
+    color: #3c41438e;
+    margin-top: 5px;
+}
+
+
+.upload-button{
+    margin: 0 0 20px 0;
+}
+
+.data-card{
+    background: white;
+    font-family: Dax, Arial, Helvetica, sans-serif;
+    color: #3c4143;
+    margin: 20px 20px 20px 20px;
+    position: relative;
+}
+
+.data-card img{
+    margin: 0 auto 0 auto;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.setting-card{  
+    background: white;
+    font-family: Dax, Arial, Helvetica, sans-serif;
+    color: #3c4143;
+    margin: 20px 20px 20px 20px;
+    position: relative;
+    text-align: center;
+}
+
+.settings{
+    text-align: left;
+}
+
+.lobby-card{
+    background: white;
+    font-family: Dax, Arial, Helvetica, sans-serif;
+    color: #3c4143;
+    margin: 20px 20px 20px 20px;
+    position: relative;
+    text-align: center;
+}
+
+.method-card {
+    text-align: left;
+    margin:10px auto 20px auto;
+    max-height: 200px;
+    min-height:153px;
+    max-width: 600px;
+    min-width:500px;
+}
+
+.method-card img{
+    max-height: 200px;
+    min-height:153px;
+    max-width: 150px;
+    min-width:115px;
+}
+
+.method-body {
+    margin: 15px 0 0 -12px;
+    padding: 0;
+}
+
+.method-body button{
+    margin: 0 10px 10px 0;
+}
+
+.deskriptiv-card {
+    background: white;
+    font-family: Dax, Arial, Helvetica, sans-serif;
+    color: #3c4143;
+    margin: 20px;
+    text-align: center;
+}
+
+.interactive-card {
+    background: white;
+    font-family: Dax, Arial, Helvetica, sans-serif;
+    color: #3c4143;
+    margin: 20px;
+    text-align: left;
+}
+
+
+.empty-table{
+    color:#3c414363;
+    margin: 0 auto 0 auto;
+    padding: 275px 0 0 0;
+    text-align : center;
+    background-color:#f2f2f2;
+    height:600px;
+    border: 2px #3c414363 solid;
+}
+
+.setting-card .choice-data{
+    margin: 5px 0 auto 0;
+}
+
+.data-preparation{
+    margin: 30px 0 30px 0;
+}
+
+
+.refresh-button{
+    position:absolute;
+    right:0;
+}
+
+
+.Input-Drop input{
+    margin: 2px 0 2px 0;
+    
+}
+
+
+.next-button{
+    position:absolute;
+    bottom:20px;
+    right:25%;
+    left:50%;
+    margin-left:-150px;
+}
+
+
+
+
+.alert-wrapper{
+    text-align: center;
+}
+
+H1{
+    font-size: 22px;
+    ;
+}
+H2{
+    font-size: 18px;
+    ;
+}
+
+
+@keyframes fadein {
+    0% {
+        opacity: 1;
+    }
+    100% {
+    
+        opacity: 1;
+    }
+}
+    
+.soon {
+    filter:opacity(0.4);
+
+}
+._dash-loading-callback {
+  font-family: sans-serif;
+  padding-top: 50px;
+  color: #f2f2f2;
+  background-image: url("/assets/gif/giphy_2.gif");
+  background-repeat: no-repeat;
+  background-position: center center; 
+  /* The banner */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  cursor: progress;
+
+  opacity: 0;
+  background-color: rgb(250, 250, 250);
+  /* Delay animation by 1s to prevent flashing 
+     and smoothly transition the animation over 0.5s 
+   */
+  -moz-animation: fadein 0.4s ease-in 1s forwards; /* Firefox */
+  -webkit-animation: fadein 0.4s ease-in 1s forwards; /* Safari and Chrome */
+  -o-animation: fadein 0.4s ease-in 1s forwards; /* Opera */
+    animation: fadein 0.4s ease-in 1s forwards;
+}
+
+@media only screen and (max-width: 2000px) {
+    .add_graph{
+        width: 750px;
+        max-width: none;
+        min-width: none;
+        
+    }
+    
+    
+    
+    .figure {
+        width: 750px;
+        max-width: none;
+        min-width: none;
+    
+        
+    }
+    
+}
+
+
+@media only screen and (max-width: 1600px) {
+    .page-content{
+        display: block;
+        filter: blur(5px);
+    }
+    .max-screen {
+        display: block;
+    }
+
+    .please-wait{
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .page-content{
+        display: none;
+    }
+
+    .max-screen img{
+        display: none;
+    }
+
+    .please-wait{
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .page-content{
+        display: none;
+    }
+
+    .max-screen h1{
+        display: none;
+    }
+
+    .please-wait{
+        display: none;
+    }
+}
