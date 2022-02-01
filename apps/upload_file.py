@@ -64,7 +64,7 @@ layout = dbc.Container([
             html.Div([
                 html.Hr(style={'margin': '5px', 'padding':'0'}),
                 dbc.Row([
-                    html.Img(src='/assets/img/alert_info_icon_15x15.png'),
+                    html.Img(src='/assets/img/alert_info_icon_15x15.png', width='15px', height='15px'),
                     html.P('Hinweise: ', className='card-text3', style={'font-weight': 'bold', 'margin': '5px 0 0 0', 'padding':'0'}),
                 ]),
                 html.P('Gültige Formate - Zu den gültigen Dateiformaten zählen CSV und XLS(X).', className='card-text3', style={'margin': '5px 0 0 0', 'padding':'0'}),
