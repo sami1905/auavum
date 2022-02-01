@@ -6,7 +6,7 @@ import dash_html_components as html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import upload_file
+from apps import upload_file, error
 
 
 
@@ -32,7 +32,7 @@ app.layout = dbc.Container([
 @app.callback(Output(component_id='page-content', component_property='children'),
                  [Input(component_id='url',component_property='pathname')])
 def display_page(pathname):
-     if pathname == '/':
+    if pathname == '/':
         return upload_file.layout
 #     if pathname == '/daten-vorbereiten':
 #         return data_preparation.layout
@@ -48,7 +48,7 @@ def display_page(pathname):
 #         return profiling.layout
 #     #if pathname == '/prototyp':
 #     #    return prototyp.layout
-#     else: return error.layout
+    else: return error.layout
 
 
 
