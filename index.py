@@ -33,8 +33,8 @@ app.layout = dbc.Container([
                  [Input(component_id='url',component_property='pathname')])
 def display_page(pathname):
     if pathname == '/':
-#        return wartung.layout
-        return upload_file.layout
+        return wartung.layout
+#        return upload_file.layout
     if pathname == '/daten-vorbereiten':
         return data_preparation.layout
 #     if pathname == '/verfahren-waehlen':
