@@ -11,21 +11,17 @@ import sys
 import pandas as pd
 from app import app
 
-
-# import functions.uploadFile as uFFuncs
-# import functions.getTable as tableFuncs
-
 layout = dbc.Container([
     dcc.Store(id='raw_upload_data', storage_type='local'),
     dbc.Row([
-        #dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
+        dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
         dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
-        #dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
+        dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
     ] ,className='header'),
 
     dbc.Row([
         dbc.Col([], width=3),
-        #dbc.Col(html.Img(src='assets/img/progress1of4.png', className='progress-img'), width=6),
+        dbc.Col(html.Img(src='assets/img/progress1of4.png', className='progress-img'), width=6),
         dbc.Col(html.Div(id='output-alert-upload', style={'display':'none'}, className='upload-alert'),width=3)
     ], className='progress-row'),
     
@@ -38,7 +34,7 @@ layout = dbc.Container([
                     dbc.Card([
                         dbc.CardBody([
                             html.H1('Schritt 1: Daten hochladen'),
-                            #html.Img(src='/assets/img/file-upload.png', className='file-upload-img'),
+                            html.Img(src='/assets/img/file-upload.png', className='file-upload-img'),
                             html.P('Lade eine oder mehrere Dateien hoch, um mit der Auswertung und Analyse zu beginnen.',
                                 className='card-text1',
                             ),
@@ -68,7 +64,7 @@ layout = dbc.Container([
             html.Div([
                 html.Hr(style={'margin': '5px', 'padding':'0'}),
                 dbc.Row([
-                    #html.Img(src='/assets/img/alert_info_icon_15x15.png', width='15px', height='15px'),
+                    html.Img(src='/assets/img/alert_info_icon_15x15.png', width='15px', height='15px'),
                     html.P('Hinweise: ', className='card-text3', style={'font-weight': 'bold', 'margin': '5px 0 0 0', 'padding':'0'}),
                 ]),
                 html.P('Gültige Formate - Zu den gültigen Dateiformaten zählen CSV und XLS(X).', className='card-text3', style={'margin': '5px 0 0 0', 'padding':'0'}),
@@ -138,7 +134,6 @@ def add_upload_data(list_of_contents, list_of_names, list_of_dates):
     if list_of_contents is not None:
         for c, n, d in zip(list_of_contents, list_of_names, list_of_dates):
             
-            #TODO check ob dieses IF benötigt wird
             #if get_dataFrame(c,n,d) is None:
                 #return None
             if isinstance(content2df(c, n, d), str):
@@ -152,19 +147,19 @@ def add_upload_data(list_of_contents, list_of_names, list_of_dates):
         
 
         for name in filenames:
-            # if '.csv' in name:
-            #     img_filename.append('/assets/img/csv_icon.png')
-            # elif '.xls' in name:
-            #     img_filename.append('/assets/img/xls_icon.png')
+            if '.csv' in name:
+                img_filename.append('/assets/img/csv_icon.png')
+            elif '.xls' in name:
+                img_filename.append('/assets/img/xls_icon.png')
             if '.xls' not in name and '.csv' not in name:
                 wrong_filename.append(str(name))
-                #img_filename.append(None)
+                img_filename.append(None)
                 
         if not wrong_filename:
             children=[
                 dbc.Alert([
                     dbc.Row([
-                        #html.Img(src='/assets/img/alert_success_icon_15x15.png', width='15px', height='15px'),
+                        html.Img(src='/assets/img/alert_success_icon_15x15.png', width='15px', height='15px'),
                         html.P('Das Hochladen der Datei(en) war erfolgreich!', className='card-text2')
                     ], className='alert-headline'),
                     html.Hr(style={'padding':'0', 'margin':'0'}),
@@ -181,7 +176,7 @@ def add_upload_data(list_of_contents, list_of_names, list_of_dates):
             children = [
                 dbc.Alert([
                     dbc.Row([
-                        #html.Img(src='/assets/img/alert_error_icon_15x15.png', width='15px', height='15px'),
+                        html.Img(src='/assets/img/alert_error_icon_15x15.png', width='15px', height='15px'),
                         html.P('Das Hochladen der Datei(en) ist fehlgeschlagen!', className='card-text2')
                     ], className='alert-headline'),
                     html.P('Fehlerhafte Datei(en): ', className='card-text3', style={'margin': '0px'}),
