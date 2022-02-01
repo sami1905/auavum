@@ -4,7 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 #connect to main app.py file and to apps
-from app import app
+from app import app, server
 #from apps import chart_dashboard, clustering, data_preparation, profiling, upload_file, error, method_lobby, interactive_charts
 
 
