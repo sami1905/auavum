@@ -6,7 +6,7 @@ import dash_html_components as html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import upload_file, error, wartung
+from apps import upload_file, error, wartung, data_preparation
 
 
 
@@ -19,7 +19,7 @@ app.layout = dbc.Container([
     html.Div(id='page-content', children=[], className='page-content'),
     html.Div(id='max-screen', 
             children=[html.H1('Fenstergröße anpassen!', style={'font-size':'100px', 'margin':'40px'}),
-            #html.Img(src='../assets/img/max_size.png', height='400px'),
+            html.Img(src='../assets/img/max_size.png', height='400px'),
             html.H2('Bitte erhöhe die Größe Deines Internetbrowser-Fensters, um die Inhalte anzuzeigen.', style={'font-size':'30px', 'margin':'30px'}),
             html.P('Um eine optimale Übersicht der Auswertung und Analyse erhalten zu können, empfiehlt es sich Deinen Internetbrowser-Fenster zu maximieren.',
             className='card-text1')], className='max-screen'),
@@ -33,10 +33,10 @@ app.layout = dbc.Container([
                  [Input(component_id='url',component_property='pathname')])
 def display_page(pathname):
     if pathname == '/':
-        return wartung.layout
-#        return upload_file.layout
-#     if pathname == '/daten-vorbereiten':
-#         return data_preparation.layout
+#        return wartung.layout
+        return upload_file.layout
+    if pathname == '/daten-vorbereiten':
+        return data_preparation.layout
 #     if pathname == '/verfahren-waehlen':
 #         return method_lobby.layout
 #     if pathname == '/diagramm-dashboard':

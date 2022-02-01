@@ -344,13 +344,7 @@ def tableHead(df):
         ]
     return children    
 
-def tableFull(df):
-    children=[]
-    if df is not None:
-        children =[
-             dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True, responsive=True)
-        ]
-    return children  
+
 
 
 def getFilename(img, name):
