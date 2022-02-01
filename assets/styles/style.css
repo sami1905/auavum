@@ -1,3 +1,9 @@
+@font-face {
+    font-family: 'Dax';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Dax'), url(..\fonts\Dax.ttf) format('ttf');
+}
 /*global alles in einer .py*/
 .content {
     background: #f2f2f2;
