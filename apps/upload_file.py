@@ -66,7 +66,7 @@ layout = dbc.Container([
                 dbc.Row([
                     html.Div(html.Img(src='/assets/img/alert_info_icon_15x15.png', width='15px', height='15px')),
                     html.P('Hinweise: ', className='card-text3', style={'font-weight': 'bold', 'margin': '5px 0 0 0', 'padding':'0'}),
-                ]),
+                ], style={'width':'auto'}),
                 html.P('Gültige Formate - Zu den gültigen Dateiformaten zählen CSV und XLS(X).', className='card-text3', style={'margin': '5px 0 0 0', 'padding':'0'}),
                 html.P('Datengröße - Lade maximal ein Gesamtvolumen von bis zu 1 MB hoch.', className='card-text3', style={'margin': '5px 0 0 0', 'padding':'0'}),
                 html.P('CSV-Dateien - Bei der Auswertung von Dateien mit CSV-Format müssen die Spalten der Datei mit ";" getrennt sein. Andernfalls lassen sich hochgeladene CSV-Dateien nicht sauber auslesen.', className='card-text3', style={'margin': '5px 0 0 0', 'padding':'0'}),
