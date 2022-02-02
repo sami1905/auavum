@@ -5,7 +5,7 @@ from sklearn.cluster import AgglomerativeClustering
 import scipy.cluster.hierarchy as sch
 import plotly.graph_objects as go
 from app import vectorizer
-from summarizer import Summarizer
+#from summarizer import Summarizer
 import torch
 from transformers import AutoTokenizer, AutoModel
 # from wordcloud import STOPWORDS
@@ -20,7 +20,7 @@ from transformers import AutoTokenizer, AutoModel
 # STOPWORDS.update(german_stop_words)
 # STOPWORDS.update(liste_der_unerwuenschten_woerter)
 
-summary_model=Summarizer()
+#summary_model=Summarizer()
 tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 token_model = AutoModel.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 
@@ -191,4 +191,5 @@ def new_transformation(sentences):
     return list
 
 def summary(text):
-    return summary_model(text, num_sentences=3)
+    #return summary_model(text, num_sentences=3)
+    return None
