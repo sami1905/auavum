@@ -6,8 +6,7 @@ import dash_html_components as html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import upload_file, error, wartung, data_preparation
-
+from apps import upload_file, error, wartung, data_preparation, chart_dashboard, clustering, method_lobby, interactive_charts
 
 
 app.layout = dbc.Container([
@@ -33,19 +32,19 @@ app.layout = dbc.Container([
                  [Input(component_id='url',component_property='pathname')])
 def display_page(pathname):
     if pathname == '/':
-        return wartung.layout
-#        return upload_file.layout
+#        return wartung.layout
+        return upload_file.layout
     if pathname == '/daten-vorbereiten':
         return data_preparation.layout
-#     if pathname == '/verfahren-waehlen':
-#         return method_lobby.layout
-#     if pathname == '/diagramm-dashboard':
-#         return chart_dashboard.layout
-#     if pathname == '/interaktive-diagrame':
-#         return interactive_charts.layout
-#     if pathname == '/clustering':
-#         return clustering.layout
-#     if pathname == '/profiling':
+    if pathname == '/verfahren-waehlen':
+        return method_lobby.layout
+    if pathname == '/diagramm-dashboard':
+        return chart_dashboard.layout
+    if pathname == '/interaktive-diagrame':
+        return interactive_charts.layout
+    if pathname == '/clustering':
+        return clustering.layout
+#    if pathname == '/profiling':
 #         return profiling.layout
 #     #if pathname == '/prototyp':
 #     #    return prototyp.layout
