@@ -34,7 +34,7 @@ app.layout = dbc.Container([
 def display_page(pathname):
     if pathname == '/':
         return wartung.layout
-#        return upload_file.layout
+        return upload_file.layout
     if pathname == '/daten-vorbereiten':
         return data_preparation.layout
     if pathname == '/verfahren-waehlen':
