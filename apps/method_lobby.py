@@ -274,23 +274,25 @@ def tab_content(active_tab):
                 Output('apply-btn2', 'style')],
     [Input('main_data_after_preperation', 'data'), 
     Input('freitext-dropdown', 'value'),
-    Input('festtext-dropdown', 'value')])
+    Input('festtext-dropdown', 'value')],
+    [State('freitext-dropdown', 'options'),
+    State('festtext-dropdown', 'options')])
 
-def update_modal(data, freitext_value, festtext_value):
+def update_modal(data, freitext_value, festtext_value, freitext_options, festtext_options):
     count_1=0
     count_2=0
-    freitext_options = []
-    festtext_options = [] 
     style1 = {'display':'block'}
     style2 = {'display':'none'}   
 
     if data is not None:
+        freitext_options = []
+        festtext_options = []
         df = pd.read_json(data, orient='split')
         df1 = df.drop(columns=[df.columns[0]])
         df2 = df1
         count_col=len(df1.columns)
         
-
+        print(freitext_value)
         if freitext_value != '-':
             for col in freitext_value:
                 df2 = df2.drop(columns=[col])
@@ -317,7 +319,7 @@ def update_modal(data, freitext_value, festtext_value):
         else:
             return children, freitext_options, festtext_options, style2, style1
     else: 
-        return None, None, None, style2, style1 
+        return None, freitext_options, festtext_options, style2, style1 
 
     
 @app.callback([Output('listOfFrei', 'data'),
