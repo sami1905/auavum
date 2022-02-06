@@ -218,10 +218,10 @@ layout = dbc.Container([
                         dbc.CardBody(
                             html.Div([
                                 html.P('(1) Merkmale (Spalten), die Freitexte enthalten:', className='card-text2', style={'margin-top': '10px', 'font-weight': 'bold'}),
-                                dcc.Dropdown(id='freitext-dropdown', options=[{'label':'-', 'value':'-'}], value=None, multi=True, placeholder='Füge die richtigen Merkmale (Spalten) hinzu ...', style={'margin': '0'}, className='dropdown'),
+                                dcc.Dropdown(id='freitext-dropdown', options=[{'label':'-', 'value':'-'}], value='-', multi=True, placeholder='Füge die richtigen Merkmale (Spalten) hinzu ...', style={'margin': '0'}, className='dropdown'),
                                                         
                                 html.P('(2) Merkmale (Spalten), die begrenzten Anzahl verschiedener fest vordefinierter (numerischer) Werte enthalten:', className='card-text2', style={'margin-top': '40px', 'font-weight': 'bold'}),
-                                dcc.Dropdown(id='festtext-dropdown', options=[{'label':'-', 'value':'-'}], value=None, multi=True, placeholder='Füge die richtigen Merkmale (Spalten) hinzu ...', style={'margin': '0'}, className='dropdown'),
+                                dcc.Dropdown(id='festtext-dropdown', options=[{'label':'-', 'value':'-'}], value='-', multi=True, placeholder='Füge die richtigen Merkmale (Spalten) hinzu ...', style={'margin': '0'}, className='dropdown'),
                             ]), id="content-1"
                         ),
                         dbc.CardBody(
@@ -291,10 +291,10 @@ def update_modal(data, freitext_value, festtext_value):
         count_col=len(df1.columns)
         
 
-        if freitext_value != None:
+        if freitext_value != '-':
             for col in freitext_value:
                 df2 = df2.drop(columns=[col])
-        if festtext_value != None:
+        if festtext_value != '-':
             for col in festtext_value:
                 df1 = df1.drop(columns=[col])
 
@@ -305,10 +305,10 @@ def update_modal(data, freitext_value, festtext_value):
 
         children = tablesFuncs.tableHead(df)
         
-        if freitext_value != None:
+        if freitext_value != '-':
             count_1 = len(freitext_value)
 
-        if festtext_value != None:
+        if festtext_value != '-':
             count_2 =len(festtext_value)
         
         if count_1 + count_2 == count_col:
