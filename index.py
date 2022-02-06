@@ -6,7 +6,7 @@ import dash_html_components as html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard
+from apps import upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard, interactive_charts
 
 
 
@@ -41,8 +41,8 @@ def display_page(pathname):
         return method_lobby.layout
     if pathname == '/diagramm-dashboard':
         return chart_dashboard.layout
-#     if pathname == '/interaktive-diagrame':
-#         return interactive_charts.layout
+    if pathname == '/interaktive-diagrame':
+        return interactive_charts.layout
 #     if pathname == '/clustering':
 #         return clustering.layout
 #     if pathname == '/profiling':

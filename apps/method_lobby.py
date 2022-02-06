@@ -292,7 +292,6 @@ def update_modal(data, freitext_value, festtext_value, freitext_options, festtex
         df2 = df1
         count_col=len(df1.columns)
         
-        print(freitext_value)
         if freitext_value != '-':
             for col in freitext_value:
                 df2 = df2.drop(columns=[col])
