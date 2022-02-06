@@ -244,7 +244,7 @@ layout = dbc.Container([
             ),
         ],
         id='modal-backdrop',
-        is_open=False,
+        is_open=True,
         backdrop='static',
         size='xl'
     ),
@@ -360,7 +360,7 @@ def update_lists(click, freitext_value, festtext_value, listOfFrei, listOfFest, 
             Input('listOfFest', 'data')],
             State('main_data_after_preperation', 'data'))
 def toggle_modal(click, listOfFrei, listOfFest, data):
-    time.sleep(5)
+    time.sleep(2)
     if data is None:
         return False
     elif click or listOfFrei != None or listOfFest != None:
