@@ -8,7 +8,7 @@ import functions.getTable as tablesFuncs
 
 layout = dbc.Container([
     
-    dcc.Store(id='cur_data', storage_type='local'),
+    dcc.Store(id='cur_data', storage_type='session'),
 
 # if main_data == None
     html.Div([
@@ -330,14 +330,20 @@ def update_modal(data, freitext_value, festtext_value):
             State('main_data_after_preperation', 'data'),
             State('cur_data', 'data')])
 def update_lists(click, freitext_value, festtext_value, listOfFrei, listOfFest, data, cur_data):
-    if data is not None:
     
-        if cur_data is not None and data != cur_data:
-            cur_data = data
-            listOfFrei = None
-            listOfFest = None
+    if data is not None:
         
+        if cur_data is not None:
+            df = pd.read_json(data, orient='split')
+            df_cur = pd.read_json(cur_data, orient='split')
+            
+            if df.equals(df_cur) == False:
+                cur_data = data
+                listOfFrei = None
+                listOfFest = None
+                       
         if click:
+            cur_data = data
             return freitext_value, festtext_value, cur_data
         
         else:
