@@ -24,7 +24,7 @@ layout=dbc.Container([
         html.H1('404 - PAGE NOT FOUND', style={'font-size':'30px', 'margin':'30px'}),
         html.P('Die gesuchte Seite scheint nicht zu existieren. Kehre zurück zur Startseite.', className='card-text1', style={'margin-bottom':'20px'}),
         dcc.Link(dbc.Button('Zurück zur Startseite', color='secondary', className='upload-button'), href='/')
-    ],  id={'type':'errorView', 'index':4}, className='alert-wrapper', style={'display':'none'}),
+    ],  id={'type':'errorView', 'index':5}, className='alert-wrapper', style={'display':'none'}),
     
     # Main-content
     html.Div([
@@ -58,7 +58,7 @@ layout=dbc.Container([
             
                 dbc.Tabs(
                     [
-                        dbc.Tab(label="Text Summarizer", tab_id="tab-summarizer"),
+                        dbc.Tab(label="Topic Modeling", tab_id="tab-topic"),
                         dbc.Tab(label="Daten", tab_id="tab-data"),
                     ],
                     id="card-tabs",
@@ -68,7 +68,7 @@ layout=dbc.Container([
             dbc.CardBody([
                     
                     
-                    html.H4("Text Summarizer", style={'text-align': 'left'}),
+                    html.H4("Topic Modeling", style={'text-align': 'left'}),
                     html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
                     dbc.Row([
                         dbc.Col(width=10),
@@ -78,18 +78,18 @@ layout=dbc.Container([
                         
                     ]),
                     
-            ],id="tab_summarizer"),
+            ],id="tab_topic"),
             
             dbc.CardBody([
                 html.H4("Daten", style={'text-align': 'left'}),
                 html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                html.Div(id='show-summarizer-data')
-            ], id="tab_data2")
+                html.Div(id='show-topic-data')
+            ], id="tab_data3")
         ], className='deskriptiv-card')
-    ], id="summarizer"),
+    ], id="topic"),
 ], className='content', fluid=True)
 
-@app.callback(Output('show-summarizer-data', 'children'), Input('main_data_after_preperation', 'data'))
+@app.callback(Output('show-topic-data', 'children'), Input('main_data_after_preperation', 'data'))
 def show_data(data):
     if data is not None:
         df = pd.read_json(data, orient='split')
@@ -100,7 +100,7 @@ def show_data(data):
     return None
 
 @app.callback(
-    [Output("tab_summarizer", "style"), Output("tab_data2", "style")], [Input("card-tabs", "active_tab")]
+    [Output("tab_topic", "style"), Output("tab_data3", "style")], [Input("card-tabs", "active_tab")]
 )
 def tab_content(active_tab):
     style1 = {'display':'block'}
@@ -116,7 +116,7 @@ def tab_content(active_tab):
 
 
 
-@app.callback([Output({'type':'errorView', 'index':4}, 'style'), Output('summarizer', 'style')],
+@app.callback([Output({'type':'errorView', 'index':5}, 'style'), Output('topic', 'style')],
                [Input('main_data_after_preperation', 'data'),
                Input('listOfFest', 'data'),
                Input('listOfFrei', 'data')])

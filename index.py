@@ -6,7 +6,7 @@ import dash_html_components as html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard, interactive_charts, summarizer
+from apps import upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard, interactive_charts, summarizer, topic, clustering
 
 
 
@@ -33,8 +33,10 @@ app.layout = dbc.Container([
                  [Input(component_id='url',component_property='pathname')])
 def display_page(pathname):
     if pathname == '/':
-#        return wartung.layout
-        return upload_file.layout
+        return wartung.layout
+#        return upload_file.layout
+    if pathname == '/upload':
+         return upload_file.layout
     if pathname == '/daten-vorbereiten':
         return data_preparation.layout
     if pathname == '/verfahren-waehlen':
@@ -45,8 +47,10 @@ def display_page(pathname):
         return interactive_charts.layout
     if pathname == '/summarizer':
         return summarizer.layout
-#     if pathname == '/clustering':
-#         return clustering.layout
+    if pathname == '/topic':
+        return topic.layout
+    if pathname == '/clustering':
+        return clustering.layout
 #     if pathname == '/profiling':
 #         return profiling.layout
 #     #if pathname == '/prototyp':
