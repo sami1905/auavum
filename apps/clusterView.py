@@ -16,7 +16,7 @@ import plotly.graph_objs as go
 import numpy as np
 from summarizer import Summarizer
 
-summary_model=Summarizer()
+summary_model= Summarizer()
 
 import functions.dataProfiling as dProfile
 

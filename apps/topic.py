@@ -8,6 +8,9 @@ from app import app
 
 import numpy as np
 
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer('distilbert-base-nli-mean-tokens')
+
 
 layout=dbc.Container([
     
@@ -131,3 +134,6 @@ def error2(main_data, d1, d2):
     else:
         return style2, style1
 
+
+def topic_modeling(data):
+    embeddings = model.encode(data)

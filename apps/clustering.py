@@ -6,6 +6,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 from app import app
+import umap
 import torch
 import apps.clusterView as cView
 import dash
@@ -551,9 +552,25 @@ def new_transformation(sentences):
 
     # Perform pooling. In this case, max pooling.
     sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-    list = sentence_embeddings
+    vecs = sentence_embeddings
 
-    return list
+    vec2d= umap.UMAP(n_neighbors=384, n_components=2, metric='cosine').fit_transform(vecs)
+    print(vecs)
+    print(vec2d)
+
+    return vec2d
+
+def plot_cluster(vector, cluster):
+    result = pd.DataFrame(vector, columns=['x', 'y'])
+    result['labels'] = cluster.labels_
+
+    # Visualize clusters
+    # fig, ax = plt.subplots(figsize=(20, 10))
+    # outliers = result.loc[result.labels == -1, :]
+    # clustered = result.loc[result.labels != -1, :]
+    # plt.scatter(outliers.x, outliers.y, color='#BDBDBD', s=0.05)
+    # plt.scatter(clustered.x, clustered.y, c=clustered.labels, s=0.05, cmap='hsv_r')
+    # plt.colorbar()
     
 
        
