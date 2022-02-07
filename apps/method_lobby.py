@@ -244,7 +244,7 @@ layout = dbc.Container([
             ),
         ],
         id='modal-backdrop',
-        is_open=False,
+        is_open=True,
         backdrop='static',
         size='xl'
     ),
