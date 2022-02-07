@@ -25,7 +25,7 @@ layout=dbc.Container([
         html.H1('404 - PAGE NOT FOUND', style={'font-size':'30px', 'margin':'30px'}),
         html.P('Die gesuchte Seite scheint nicht zu existieren. Kehre zurück zur Startseite.', className='card-text1', style={'margin-bottom':'20px'}),
         dcc.Link(dbc.Button('Zurück zur Startseite', color='secondary', className='upload-button'), href='/')
-    ], id='error3', className='alert-wrapper', style={'display':'none'}),
+    ],  id={'type':'errorView', 'index':2}, className='alert-wrapper', style={'display':'none'}),
     
     # Main-content
     html.Div([
@@ -37,7 +37,7 @@ layout=dbc.Container([
 
         dbc.Row([
             dbc.Col([], width=3),
-            dbc.Col(html.Img(src='assets/img/progress4of4.png', className='progress-img'), width=6),
+            dbc.Col(html.Img(src='assets/img/progress3of4.png', className='progress-img'), width=6),
             dbc.Col(html.Div(id='output-alert-prepare', style={'display':'none'}, className='upload-alert'),width=3)
         ], className='progress-row'),
 
@@ -91,7 +91,7 @@ layout=dbc.Container([
                 html.Div(id='show-deskriptiv-data')
             ], id="tab_data")
         ], className='deskriptiv-card')
-    ], id="deskriptiv1"),
+    ], id="deskriptiv"),
 ], className='content', fluid=True)
 
 @app.callback(Output('figures', 'children'),
@@ -397,4 +397,19 @@ def getPie(col, data):
     return fig
 
 
+
+@app.callback([Output({'type':'errorView', 'index':2}, 'style'), Output('deskriptiv', 'style')],
+               [Input('main_data_after_preperation', 'data'),
+               Input('listOfFest', 'data'),
+               Input('listOfFrei', 'data')])
+def error2(main_data, d1, d2):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
+    
+    
+    if main_data is None or d1 is None or d2 is None:
+        return style1, style2
+    
+    else:
+        return style2, style1
 

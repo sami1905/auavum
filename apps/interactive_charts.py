@@ -25,7 +25,7 @@ layout=dbc.Container([
         html.H1('404 - PAGE NOT FOUND', style={'font-size':'30px', 'margin':'30px'}),
         html.P('Die gesuchte Seite scheint nicht zu existieren. Kehre zurück zur Startseite.', className='card-text1', style={'margin-bottom':'20px'}),
         dcc.Link(dbc.Button('Zurück zur Startseite', color='secondary', className='upload-button'), href='/')
-    ], id='error3', className='alert-wrapper', style={'display':'none'}),
+    ],  id={'type':'errorView', 'index':3}, className='alert-wrapper', style={'display':'none'}),
     
     # Main-content
     html.Div([
@@ -37,7 +37,7 @@ layout=dbc.Container([
 
         dbc.Row([
             dbc.Col([], width=3),
-            dbc.Col(html.Img(src='assets/img/progress4of4.png', className='progress-img'), width=6),
+            dbc.Col(html.Img(src='assets/img/progress3of4.png', className='progress-img'), width=6),
             dbc.Col(html.Div(id='output-alert-prepare', style={'display':'none'}, className='upload-alert'),width=3)
         ], className='progress-row'),
 
@@ -214,54 +214,55 @@ def tab_content(active_tab):
     State('listOfFest', 'data')])
 def display_dropdowns(new_layer, delete_layer, children, listOfFest):
     options = []
-    for col in listOfFest:
-        options.append({'label':col, 'value': col})
-    
-    
-    if new_layer == 3 and not delete_layer:
-        new_dropdown = dcc.Dropdown(
-            id={'type': 'filter-dropdown','index': 0},
-            options=options, 
-            value=listOfFest[0], 
-            clearable=False,
-            searchable=False,
-            className='dropdown',
-            style={'font-size': '14px', 'width': '300px'})
+    if listOfFest is not None:
+        for col in listOfFest:
+            options.append({'label':col, 'value': col})
         
-        children.append(new_dropdown)
-        new_dropdown = dcc.Dropdown(
-            id={'type': 'filter-dropdown','index': 1},
-            options=options, 
-            value=listOfFest[1], 
-            clearable=False,
-            searchable=False,
-            className='dropdown',
-            style={'font-size': '14px', 'width': '300px'})
-        children.append(new_dropdown)
-        new_dropdown = dcc.Dropdown(
-            id={'type': 'filter-dropdown','index': 2},
-            options=options, 
-            value=listOfFest[2], 
-            clearable=False,
-            searchable=False,
-            className='dropdown',
-            style={'font-size': '14px', 'width': '300px'})
-        children.append(new_dropdown)
-    
-    elif new_layer > 3 and not delete_layer:
-        new_dropdown = dcc.Dropdown(
-            id={'type': 'filter-dropdown','index': new_layer-1},
-            options=options, 
-            value=listOfFest[new_layer-1], 
-            clearable=False,
-            searchable=False,
-            className='dropdown',
-            style={'font-size': '14px', 'width': '300px'})
-        children.append(new_dropdown)
-    
-    
-    elif len(children) > 3 and delete_layer:
-        children = children[:-1]
+        
+        if new_layer == 3 and not delete_layer:
+            new_dropdown = dcc.Dropdown(
+                id={'type': 'filter-dropdown','index': 0},
+                options=options, 
+                value=listOfFest[0], 
+                clearable=False,
+                searchable=False,
+                className='dropdown',
+                style={'font-size': '14px', 'width': '300px'})
+            
+            children.append(new_dropdown)
+            new_dropdown = dcc.Dropdown(
+                id={'type': 'filter-dropdown','index': 1},
+                options=options, 
+                value=listOfFest[1], 
+                clearable=False,
+                searchable=False,
+                className='dropdown',
+                style={'font-size': '14px', 'width': '300px'})
+            children.append(new_dropdown)
+            new_dropdown = dcc.Dropdown(
+                id={'type': 'filter-dropdown','index': 2},
+                options=options, 
+                value=listOfFest[2], 
+                clearable=False,
+                searchable=False,
+                className='dropdown',
+                style={'font-size': '14px', 'width': '300px'})
+            children.append(new_dropdown)
+        
+        elif new_layer > 3 and not delete_layer:
+            new_dropdown = dcc.Dropdown(
+                id={'type': 'filter-dropdown','index': new_layer-1},
+                options=options, 
+                value=listOfFest[new_layer-1], 
+                clearable=False,
+                searchable=False,
+                className='dropdown',
+                style={'font-size': '14px', 'width': '300px'})
+            children.append(new_dropdown)
+        
+        
+        elif len(children) > 3 and delete_layer:
+            children = children[:-1]
 
     return children, 0
 
@@ -279,15 +280,17 @@ def display_dropdowns(layerList, listOfFest):
     style1 = {'margin': '0 0 0 10px', 'display':'block'}
     style2 = {'display':'none'}
 
+    if listOfFest is not None:
+        if len(layerList) == len(listOfFest):
+            return style2, style1, style1, style2
 
-    if len(layerList) == len(listOfFest):
-        return style2, style1, style1, style2
+        if len(layerList) == 3:
+            return style1, style2, style2, style1
 
-    if len(layerList) == 3:
-        return style1, style2, style2, style1
-
+        else:
+            return style1, style1, style2, style2
     else:
-        return style1, style1, style2, style2       
+        return style1, style1, style2, style2     
 
 @app.callback(
     Output('interactive-figure', 'figure'),
@@ -298,21 +301,37 @@ def display_dropdowns(layerList, listOfFest):
 def get_figur(values, chart_type, data):
     listofCols = []
     fig = {}
-    for (i, value) in enumerate(values):
-        listofCols.append(value)
-    
-    df = pd.read_json(data, orient='split')
-    df = df.fillna('Keine Angaben')
-    df = df[listofCols]
+    if data is not None:
+        for (i, value) in enumerate(values):
+            listofCols.append(value)
+        
+        df = pd.read_json(data, orient='split')
+        df = df.fillna('Keine Angaben')
+        df = df[listofCols]
 
-    if chart_type == 1:
-        fig = px.sunburst(df, path=listofCols, width=1200, height=1200)
-    elif chart_type == 2:
-        fig = px.icicle(df, path=listofCols, width=1600, height=1200)
-    elif chart_type == 3:
-        fig = px.treemap(df, path=listofCols, width=1600, height=1200)
-    elif chart_type == 4:
-        fig = px.parallel_categories(df, width=1600, height=1200)
+        if chart_type == 1:
+            fig = px.sunburst(df, path=listofCols, width=1200, height=1200)
+        elif chart_type == 2:
+            fig = px.icicle(df, path=listofCols, width=1600, height=1200)
+        elif chart_type == 3:
+            fig = px.treemap(df, path=listofCols, width=1600, height=1200)
+        elif chart_type == 4:
+            fig = px.parallel_categories(df, width=1600, height=1200)
 
     return fig
+
+@app.callback([Output({'type':'errorView', 'index':3}, 'style'), Output('interactive-charts', 'style')],
+               [Input('main_data_after_preperation', 'data'),
+               Input('listOfFest', 'data'),
+               Input('listOfFrei', 'data')])
+def error3(main_data, d1, d2):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
+    
+    
+    if main_data is None or d1 is None or d2 is None:
+        return style1, style2
+    
+    else:
+        return style2, style1
 
