@@ -9,6 +9,7 @@ from wordcloud import WordCloud, STOPWORDS
 from nltk.corpus import stopwords
 import nltk
 nltk.download('punkt')
+nltk.download('stopwords')
 import matplotlib.pyplot as plt
 import random
 import plotly.graph_objs as go
