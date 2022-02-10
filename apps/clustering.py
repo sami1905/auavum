@@ -17,6 +17,7 @@ import scipy.cluster.hierarchy as sch
 import plotly.graph_objects as go
 from scipy.spatial.distance import pdist, squareform
 from sklearn.cluster import AgglomerativeClustering
+import plotly.express as px
 from transformers import AutoTokenizer, AutoModel
 tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 token_model = AutoModel.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
@@ -97,6 +98,8 @@ layout=dbc.Container([
                     ),
 
                 ], style={"width":"80%", "text-align":"center"}),
+
+                html.Div(id='show-cluster-plot', children=None, style={"margin": "10px 0"}),
                 
                 html.Div(id='show-clusters', children=None, style={"margin": "10px 0"})
             ],id="tab_1_clustering", style={"margin": "10px 0"}),
@@ -195,8 +198,6 @@ def show_dendro(col, data):
         print("Beenden 'get_dendro' after: ")
         finished = time.perf_counter()
         print(f'{round(finished-start, 2) } second(s)')
-
-        print(vectors.tolist())
             
         return dcc.Graph(figure=dendro), vectors
     else:
@@ -307,7 +308,8 @@ def update_drops(data, clusters, value):
 
 @app.callback([Output('show-clusters', 'children'),
                 Output('clusters', 'data'),
-                Output('clustered-data', 'data'),],
+                Output('clustered-data', 'data'),
+                Output('show-cluster-plot', 'children')],
             [Input('main_data_after_preperation', 'data'),
             Input('choosen-col', 'value'), Input('count_clusters', 'value'), Input('vectors', 'data')])
 def show_clusters(data, col, k, vectors):
@@ -320,11 +322,13 @@ def show_clusters(data, col, k, vectors):
 
        
         cluster = get_Clusters(k[0], vectors)
+        scatter = plot_2d(vectors, cluster)
         df["Cluster"] = cluster+1
 
         clusters = list(dict.fromkeys(cluster))
         clusters.sort()
         children = []
+        
         
         for clu in clusters:
             is_open = False
@@ -375,9 +379,10 @@ def show_clusters(data, col, k, vectors):
 
             children.append(new_collapse)
         
-        return children, df["Cluster"], df.to_json(date_format='iso', orient='split')
+        
+        return children, df["Cluster"], df.to_json(date_format='iso', orient='split'), dcc.Graph(figure=scatter)
     else:
-        return None, None, None
+        return None, None, None, None
 
    
 @app.callback(
@@ -560,31 +565,37 @@ def new_transformation(sentences):
     vecs = sentence_embeddings
     print(len(vecs[0]))
     print(len(vecs[1]))
-    vec2d= umap.UMAP(n_neighbors=384, n_components=2, metric='cosine').fit_transform(vecs)
+    vec2d= umap.UMAP(random_state=42, n_neighbors=384, n_components=2, metric='cosine').fit_transform(vecs)
     print(vecs)
     print(vec2d)
 
     return vec2d
 
-def plot_cluster(vector, cluster):
-    result = pd.DataFrame(vector, columns=['x', 'y'])
-    result['labels'] = cluster.labels_
 
-    # Visualize clusters
+
+def plot_2d(vectors, clusterLabels):    
+    result = pd.DataFrame(vectors, columns=['x','y'])
+    result['labels'] = clusterLabels+1
+    print(result)
+    print(clusterLabels)
+    
     # fig, ax = plt.subplots(figsize=(20, 10))
-    # outliers = result.loc[result.labels == -1, :]
-    # clustered = result.loc[result.labels != -1, :]
-    # plt.scatter(outliers.x, outliers.y, color='#BDBDBD', s=0.05)
-    # plt.scatter(clustered.x, clustered.y, c=clustered.labels, s=0.05, cmap='hsv_r')
+    outliers = result.loc[result.labels == -1, :]
+    clustered = result.loc[result.labels != -1, :]
+    
     # plt.colorbar()
+
+    #fig1 = px.scatter(outliers, x="x", y="y")
+
+    fig = px.scatter(clustered, x="x", y="y", color='labels')
+    #fig3 = go.Figure(data=fig1.data + fig2.data)
+
+    return fig
     
 
        
 
     
-
-
-
 
 
 
