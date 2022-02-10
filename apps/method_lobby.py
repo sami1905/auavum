@@ -135,25 +135,25 @@ layout = dbc.Container([
             ], style={'margin':'20px', 'text-align':"left"}),
             dbc.CardBody([
                 dbc.Row([
-                    # dbc.Col(dbc.Card([
-                    #     dbc.Row([
-                    #     dbc.Col(dbc.CardImg(src='assets/img/clustering200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),
-                    #     dbc.Col(dbc.CardBody([
-                    #             html.H4('Clustering-Analyse', className='card-title'),
-                    #             html.P(
-                    #                 '',
-                    #                 className='card-text3',
-                    #             ),
-                    #             dbc.Row([
-                    #                 dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/clustering'),
-                    #                 dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
-                    #                             'color' : '#3c4143',
-                    #                             'textAlign': 'center',
-                    #                             'font-size' : '14px'})
-                    #                 ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
-                    #         ], className='method-body'), width=9)
-                    #     ])
-                    # ], className='method-card'), width=4),
+                    dbc.Col(dbc.Card([
+                        dbc.Row([
+                        dbc.Col(dbc.CardImg(src='assets/img/clustering200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),
+                        dbc.Col(dbc.CardBody([
+                                html.H4('Clustering-Analyse', className='card-title'),
+                                html.P(
+                                    '',
+                                    className='card-text3',
+                                ),
+                                dbc.Row([
+                                    dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/clustering'),
+                                    dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
+                                                'color' : '#3c4143',
+                                                'textAlign': 'center',
+                                                'font-size' : '14px'})
+                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                            ], className='method-body'), width=9)
+                        ])
+                    ], className='method-card'), width=4),
                     # dbc.Col(dbc.Card([
                     #     dbc.Row([
                     #     dbc.Col(dbc.CardImg(src='assets/img/sentiment200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),

@@ -195,9 +195,10 @@ def show_dendro(col, data):
         print("Beenden 'get_dendro' after: ")
         finished = time.perf_counter()
         print(f'{round(finished-start, 2) } second(s)')
+
+        print(vectors.tolist())
             
         return dcc.Graph(figure=dendro), vectors
-
     else:
         return None, None
 
@@ -313,6 +314,10 @@ def show_clusters(data, col, k, vectors):
     if data is not None and col != "-" and k[0] > 1:
         df = pd.read_json(data, orient='split')
         df = df.dropna(subset=[col])
+
+        # if vectors is not None:
+        #     vectors = json.dumps(vectors)
+
        
         cluster = get_Clusters(k[0], vectors)
         df["Cluster"] = cluster+1
@@ -553,8 +558,9 @@ def new_transformation(sentences):
     # Perform pooling. In this case, max pooling.
     sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
     vecs = sentence_embeddings
-
-    vec2d= umap.UMAP(n_neighbors=384, n_components=2, metric='cosine').fit_transform(vecs)
+    print(len(vecs[0]))
+    print(len(vecs[1]))
+    vec2d= umap.UMAP(n_neighbors=383, n_components=2, metric='cosine').fit_transform(vecs)
     print(vecs)
     print(vec2d)
 

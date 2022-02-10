@@ -49,8 +49,8 @@ def display_page(pathname):
 #        return summarizer.layout
 #    if pathname == '/topic':
 #        return topic.layout
-#    if pathname == '/clustering':
-#        return clustering.layout
+    if pathname == '/clustering':
+       return clustering.layout
 #    if pathname == '/profiling':
 #        return profiling.layout
 #    if pathname == '/prototyp':
