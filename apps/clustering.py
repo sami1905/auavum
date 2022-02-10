@@ -6,7 +6,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 from app import app
-import umap
+import umap.umap_ as umap
 import torch
 import apps.clusterView as cView
 import dash
@@ -560,7 +560,7 @@ def new_transformation(sentences):
     vecs = sentence_embeddings
     print(len(vecs[0]))
     print(len(vecs[1]))
-    vec2d= umap.UMAP(n_neighbors=383, n_components=2, metric='cosine').fit_transform(vecs)
+    vec2d= umap.UMAP(n_neighbors=384, n_components=2, metric='cosine').fit_transform(vecs)
     print(vecs)
     print(vec2d)
 
