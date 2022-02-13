@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import random
 import plotly.graph_objs as go
 import numpy as np
+from apps import summary
 
 
 import functions.dataProfiling as dProfile
@@ -152,7 +153,7 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                         dbc.CardBody([
                             html.H4("Text Summarizer:", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                            html.Div(summary.layout())
+                            html.Div(summary.layout(summarizeTheText))
                             #dcc.Graph(figure = sun)
                         ])
                     ], className='deskriptiv-card'),

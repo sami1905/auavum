@@ -90,6 +90,7 @@ layout=dbc.Container([
                 html.Div(id="dendro", children=[]),
 
                 html.Div([
+                    html.P('Gib an, in wie vielen Cluster erstellt werden sollen:' , className='card-text2', style={'margin-top':'10px'}),
                     dcc.RangeSlider(
                         id='count_clusters',
                         min=2, max=18, step=1,
@@ -97,7 +98,7 @@ layout=dbc.Container([
                         value=[1],
                     ),
 
-                ], style={"width":"80%", "text-align":"center"}),
+                ], style={"width":"80%", "text-align":"left"}),
 
                 html.Div(id='show-cluster-plot', children=None, style={"margin": "10px 0"}),
                 

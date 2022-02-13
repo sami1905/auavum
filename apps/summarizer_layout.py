@@ -71,7 +71,14 @@ layout=dbc.Container([
                     
                     html.H4("Text Summarizer", style={'text-align': 'left'}),
                     html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                    html.Div(summary.layout()),
+                    html.P('Wähle deine Freitexte:' , className='card-text2', style={'font-weight': 'bold'}),
+                    dcc.Dropdown(id='text-dropdown', 
+                                    	    options=[{'label': '-', 'value': '-'}], 
+                                            value='-', 
+                                            clearable=False,
+                                            searchable=False,
+                                            className='dropdown'),
+                    html.Div([], id="summarized-text"),
                     
             ],id="tab_summarizer"),
             
@@ -126,3 +133,37 @@ def error2(main_data, d1, d2):
     else:
         return style2, style1
 
+@app.callback(Output('text-dropdown', 'options'),
+               [Input('listOfFrei', 'data')])
+def update_text_dropdown(cols):
+    options=[{'label':'-', 'value':'-'}]
+    if cols is not None:
+        
+        for col in cols:
+            options.append({'label':'{}'.format(col, col), 'value':col})
+            
+    return options
+
+@app.callback(Output('summarized-text', 'children'),
+               [Input('text-dropdown', 'value'),
+               Input('main_data_after_preperation', 'data')])
+def update_text_dropdown(value, data):
+    
+    if data is not None:
+        df = pd.read_json(data, orient='split')
+        
+        if value != "-":
+            df = df.dropna(subset=[value])
+            
+            texts = df[value].values
+            summarizeTheText = ""
+
+    
+            for text in texts:
+                summarizeTheText = summarizeTheText + text + " "
+        
+            return summary.layout(summarizeTheText)
+        else:
+            return None
+            
+    return None
