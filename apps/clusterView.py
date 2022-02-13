@@ -12,9 +12,7 @@ import matplotlib.pyplot as plt
 import random
 import plotly.graph_objs as go
 import numpy as np
-from summarizer import Summarizer
 
-summary_model= Summarizer()
 
 import functions.dataProfiling as dProfile
 
@@ -139,11 +137,7 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                             dbc.Row([
                                     html.P('Ausgewähltes Merkmal (Spalte): ' , className='card-text2', style={'font-weight': 'bold'}),
                                     html.P(col, className='card-text2')
-                                    ], style={'margin-left':'3px'}),
-                            dbc.Row([
-                                html.P("Zusammenfassung: ", className='card-text2', style={'font-weight': 'bold'}),
-                                html.P(summary(summarizeTheText), className='card-text2')                                
-                            ], style={'margin-left':'3px'}),
+                                    ], style={'margin-left':'3px'})
                         ])
                     ], className='deskriptiv-card', style={"text-align" : "left"}),
                     dbc.Card([
@@ -156,8 +150,9 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                 dbc.Col([
                     dbc.Card([
                         dbc.CardBody([
-                            html.H4("Interaktives Diagramm", style={'text-align': 'left'}),
+                            html.H4("Text Summarizer:", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                            html.Div(summary.layout())
                             #dcc.Graph(figure = sun)
                         ])
                     ], className='deskriptiv-card'),
@@ -236,8 +231,7 @@ def getPie(col, data):
     fig = px.pie(data_frame=data, names=data.columns[col])
     return fig
 
-def summary(text):
-    return summary_model(text, num_sentences=3)
+
 
 
 

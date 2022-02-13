@@ -7,6 +7,7 @@ import plotly.express as px
 from app import app
 
 import numpy as np
+from apps import summary
 
 
 layout=dbc.Container([
@@ -70,13 +71,7 @@ layout=dbc.Container([
                     
                     html.H4("Text Summarizer", style={'text-align': 'left'}),
                     html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                    dbc.Row([
-                        dbc.Col(width=10),
-                        dbc.Col(width=2)
-                    ]),
-                    html.Div([
-                        
-                    ]),
+                    html.Div(summary.layout()),
                     
             ],id="tab_summarizer"),
             
