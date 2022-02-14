@@ -84,24 +84,26 @@ layout=dbc.Container([
             dbc.CardBody([
                 html.H4("Clustering-Analyse", style={'text-align': 'left'}),
                 html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                html.P("Wähle das Merkmal für die Durchführung der Clustering-Analyse:" , className="card-text2", style={"font-weight": "bold", "margin":"30px 0 0 0"}),
-                dcc.Dropdown(id="choosen-col", options= [{'label':'-', 'value':'-'}], value='-', searchable=False, clearable=False, className='dropdown'),
+                dbc.Row([
+                    dbc.Col(
+                        html.Div([
+                            html.P("Wähle das Merkmal für die Durchführung der Clustering-Analyse:" , className="card-text2", style={"font-weight": "bold", "margin":"20px 0 10px 0"}),
+                            dcc.Dropdown(id="choosen-col", options= [{'label':'-', 'value':'-'}], value='-', searchable=False, clearable=False, className='dropdown'),
 
-                html.Div(id="dendro", children=[]),
-
-                html.Div([
-                    html.P('Gib an, in wie vielen Cluster erstellt werden sollen:' , className='card-text2', style={'margin-top':'10px'}),
-                    dcc.RangeSlider(
-                        id='count_clusters',
-                        min=2, max=18, step=1,
-                        marks={2: '2', 3:' ', 4:'4', 5:' ', 6:'6', 7:' ', 8:'8', 9:' ', 10: '10', 11:' ', 12: '12', 13:' ', 14:'14', 15: ' ', 16:'16', 17: ' ', 18: '18'},
-                        value=[1],
-                    ),
-
-                ], style={"width":"80%", "text-align":"left"}),
-
-                html.Div(id='show-cluster-plot', children=None, style={"margin": "10px 0"}),
-                
+                            html.Div(id="dendro", children=[], style={"margin":"20px 0"})
+                        ]), width=7),
+                    dbc.Col(
+                        html.Div([
+                            html.P('Wähle die Cluster-Anzahl:' , className='card-text2', style={"font-weight": "bold", "margin":"20px 0"}),
+                            dcc.RangeSlider(
+                                id='count_clusters',
+                                min=2, max=18, step=1,
+                                marks={2: '2', 3:' ', 4:'4', 5:' ', 6:'6', 7:' ', 8:'8', 9:' ', 10: '10', 11:' ', 12: '12', 13:' ', 14:'14', 15: ' ', 16:'16', 17: ' ', 18: '18'},
+                                value=[1],
+                            ),
+                            html.Div(id='show-cluster-plot', children=None, style={"margin": "20px 0", "width":"650px", "text-align":"center"}),
+                        ], style={"width":"80%", "text-align":"left"}), width=5)
+                ]),
                 html.Div(id='show-clusters', children=None, style={"margin": "10px 0"})
             ],id="tab_1_clustering", style={"margin": "10px 0"}),
             
@@ -486,7 +488,7 @@ def get_Dendro(vectors, labels):
         dendro.add_trace(data)
 
     # Edit Layout
-    dendro.update_layout({'width':1200, 'height':1200,
+    dendro.update_layout({'width':1000, 'height':1000,
                             'showlegend':False, 'hovermode': 'closest',
                             })
 
@@ -566,7 +568,7 @@ def new_transformation(sentences):
     vecs = sentence_embeddings
     print(len(vecs[0]))
     print(len(vecs[1]))
-    vec2d= umap.UMAP(random_state=42, n_neighbors=384, n_components=2, metric='cosine').fit_transform(vecs)
+    vec2d= umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine').fit_transform(vecs)
     print(vecs)
     print(vec2d)
 

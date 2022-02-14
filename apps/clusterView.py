@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 import random
 import plotly.graph_objs as go
 import numpy as np
-from apps import summary
+import pandas as pd
+from apps import summary, profiler
 
 
 import functions.dataProfiling as dProfile
@@ -59,17 +60,18 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
     scatter.update_layout(yaxis_title='Subjektivität', xaxis_title='Polarität')  
 
     histo = px.histogram(df, x=list_polarity, y= index_str)
+    histo2 = px.histogram(df, y= list_polarity_str)
     list_polarity.sort()
     for pol in list_polarity:
         list_polarity_str.append(str(pol))
-    histo2 = px.histogram(df, y= list_polarity_str)
+    pie = px.pie(df, list_polarity_str)
 
     
     german_stop_words = stopwords.words('german')
     STOPWORDS.update(german_stop_words)
     STOPWORDS.update(liste_der_unerwuenschten_woerter)
 
-    wordcloud = WordCloud(background_color="white",width=1920, height=1080).generate(summarizeTheText)
+    wordcloud = WordCloud(background_color="white",width=1100, height=750).generate(summarizeTheText)
     wc = wordcloud.to_image()
     fig3 = px.imshow(np.array(wc))
     fig3.update_layout(coloraxis_showscale=False)
@@ -87,6 +89,7 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
 
 
     children = [
+        dcc.Store(id='clusterdata', storage_type='memory', data=df.to_json(date_format='iso', orient='split')),
         html.Div([
             dbc.Row([
                 dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
@@ -140,41 +143,14 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                                     html.P(col, className='card-text2')
                                     ], style={'margin-left':'3px'})
                         ])
-                    ], className='deskriptiv-card', style={"text-align" : "left"}),
-                    dbc.Card([
-                        dbc.CardBody([
-                            html.H4("Merkmale (Spalten):", style={'text-align': 'left'}),
-                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                            dbc.Row(children = charts),
-                        ])
-                    ], className='deskriptiv-card')],width=6),
-                dbc.Col([
+                    ], style={"width": "max", "height": "max"}, className='deskriptiv-card'),
                     dbc.Card([
                         dbc.CardBody([
                             html.H4("Text Summarizer:", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
                             html.Div(summary.layout(summarizeTheText))
-                            #dcc.Graph(figure = sun)
                         ])
-                    ], className='deskriptiv-card'),
-                    dbc.Card([
-                        dbc.CardBody([
-                            html.H4("Freitext-Vergleiche:", style={'text-align': 'left'}),
-                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                        ])
-                    ], style={"width": "max", "height": "max"}, className='deskriptiv-card'),
-                     dbc.Card([
-                        dbc.CardBody([
-                            html.H4("Word-Cloud:", style={'text-align': 'left'}),
-                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                            
-                            dcc.Graph(id="cloud", style={'margin': '2%'}, figure = fig3),
-                        ])
-                    ], className='deskriptiv-card')
-                ],width=6),
-            ]),
-
-            dbc.Row([
+                    ],style={"width": "max", "height": "max"}, className='deskriptiv-card')],width=4),
                 dbc.Col([
                     dbc.Card([
                         dbc.CardBody([
@@ -182,45 +158,53 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
                             dcc.Graph(id="corr", style={'margin': '2%'}, figure = corr)
                         ])
-                    ], style={"width": "max", "height": "max"}, className='deskriptiv-card'),
+                    ], className='deskriptiv-card'),
                     ],width=4),
                 dbc.Col(
                     dbc.Card([
                         dbc.CardBody([
-                            html.H4("Sentiment-Analyse:", style={'text-align': 'left'}),
+                            html.H4("Word-Cloud:", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                            html.P("Polarität",style={'margin': '4%'}),
                             
-                            dcc.Graph(id="scatter-graph", style={'margin': '2%'}, figure = scatter),
-                            dcc.Graph(id="histo-graph", style={'margin': '2%'}, figure = histo),
-                            dcc.Graph(id="histo-graph2", style={'margin': '2%'}, figure = histo2),
-                            
+                            dcc.Graph(id="cloud", style={'height': '470px', "margin":"0", "padding":"0"}, figure = fig3),
                         ])
-                    ], className='deskriptiv-card'),width=8),
-
-            ]),
-
-            dbc.Row([
-                dbc.Col(width=6),
-                #dbc.Col(    
-                    # dbc.Card([
-                    #     dbc.CardBody([
-                    #         html.H4("Knowledge-Graph:", style={'text-align': 'left'}),
-                    #         html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                    #     ])
-                    # ], style={"width": "max", "height": "500px"}, className='deskriptiv-card'),width=6)
+                    ], className='deskriptiv-card'), width = 4)
             ]),
 
             dbc.Row([
                 dbc.Col(
                     dbc.Card([
                         dbc.CardBody([
-                            html.H4("Datentabelle:", style={'text-align': 'left'}),
+                            html.H4("Merkmale (Spalten):", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                            html.P('Wähle ein Merkmal (Spalte):' , className='card-text2', style={'font-weight': 'bold'}),
+                            dcc.Dropdown(id='prof-dropdown', 
+                                    	    options=[{'label': i, 'value': i} for i in listOfFest], 
+                                            value=listOfFest[0], 
+                                            clearable=False,
+                                            searchable=False,
+                                            className='dropdown'),
+                    html.Div([], id="prof"),
                         ])
-                    ], style={"width": "max", "height": "2000px"}, className='deskriptiv-card'),width=12)
-            ])
-            
+                    ], className='deskriptiv-card'), width = 6),
+                dbc.Col(dbc.Card([
+                    dbc.CardBody([
+                        html.H4("Sentiment-Analyse:", style={'text-align': 'left'}),
+                        html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                        html.P("Polarität",style={'margin': '4%'}),
+                        dcc.Graph(id="scatter-graph", style={'margin': '2%'}, figure = scatter),
+                        dbc.Row([
+                            dcc.Graph(id="histo-graph", style={'margin': '2%'}, figure = histo),
+                            dcc.Graph(id="histo-graph2", style={'margin': '2%'}, figure = histo2),
+
+                        ]),
+                        dcc.Graph(id="pie-graph", style={'margin': '2%'}, figure = pie),
+                        
+                        
+                            
+                        ])
+                ], className='deskriptiv-card'),width=6)   
+            ])           
                     
         ])
     ]
@@ -232,6 +216,16 @@ def getPie(col, data):
     fig = px.pie(data_frame=data, names=data.columns[col])
     return fig
 
+@app.callback(Output('prof', 'children'),
+               [Input('prof-dropdown', 'value'),
+               Input('clusterdata', 'data')])
+def update_profile_content(value, data):
+    if data is not None:
+        df = pd.read_json(data, orient='split')           
+        print(value)
+        return profiler.profile(df, value)
+    else:
+        return None
 
 
 
