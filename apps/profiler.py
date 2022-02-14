@@ -39,6 +39,7 @@ def getCollapseInput(df, col, df_c):
     
     return html.Div([
         html.H1(col, style={'margin-top':'25px'}),
+        html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
         dbc.Row([
             dbc.Col(
                 html.Div([
@@ -81,6 +82,7 @@ def getCollapseInputFloat(df, col, df_c):
     
     children = html.Div([
         html.H1(col, style={'margin-top':'25px'}),
+        html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
         dbc.Row([
             dbc.Col(
                 html.Div([
@@ -106,7 +108,7 @@ def getCollapseInputFloat(df, col, df_c):
                     ], style={'margin-left':'3px'}),
                     dcc.Graph(figure = fig1),
                     dcc.Graph(figure = fig2)
-                    ]), width = 6, style={'margin-top': '20px'}),
+                    ]), width = 6),
                                             
             dbc.Col(
                 tableFull(df_value_counts), width = 6),

@@ -568,7 +568,8 @@ def new_transformation(sentences):
     vecs = sentence_embeddings
     print(len(vecs[0]))
     print(len(vecs[1]))
-    vec2d= umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine').fit_transform(vecs)
+    reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine')
+    vec2d= reducer.fit_transform(vecs)
     print(vecs)
     print(vec2d)
 
