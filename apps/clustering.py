@@ -2,8 +2,8 @@
 import time
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import pandas as pd
 from app import app
 import umap.umap_ as umap
@@ -313,9 +313,9 @@ def update_drops(data, clusters, value):
                 Output('clusters', 'data'),
                 Output('clustered-data', 'data'),
                 Output('show-cluster-plot', 'children')],
-            [Input('main_data_after_preperation', 'data'),
-            Input('choosen-col', 'value'), Input('count_clusters', 'value'), Input('vectors', 'data')])
-def show_clusters(data, col, k, vectors):
+            [Input('count_clusters', 'value')],
+            [State('main_data_after_preperation', 'data'), State('choosen-col', 'value'), State('vectors', 'data')])
+def show_clusters(k, data, col, vectors):
     if data is not None and col != "-" and k[0] > 1:
         df = pd.read_json(data, orient='split')
         df = df.dropna(subset=[col])
@@ -566,13 +566,8 @@ def new_transformation(sentences):
     # Perform pooling. In this case, max pooling.
     sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
     vecs = sentence_embeddings
-    print(len(vecs[0]))
-    print(len(vecs[1]))
     reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine')
     vec2d= reducer.fit_transform(vecs)
-    print(vecs)
-    print(vec2d)
-
     return vec2d
 
 
@@ -580,19 +575,8 @@ def new_transformation(sentences):
 def plot_2d(vectors, clusterLabels):    
     result = pd.DataFrame(vectors, columns=['x','y'])
     result['labels'] = clusterLabels+1
-    print(result)
-    print(clusterLabels)
-    
-    # fig, ax = plt.subplots(figsize=(20, 10))
-    outliers = result.loc[result.labels == -1, :]
-    clustered = result.loc[result.labels != -1, :]
-    
-    # plt.colorbar()
-
-    #fig1 = px.scatter(outliers, x="x", y="y")
-
-    fig = px.scatter(clustered, x="x", y="y", color='labels')
-    #fig3 = go.Figure(data=fig1.data + fig2.data)
+   
+    fig = px.scatter(result, x="x", y="y", color='labels')
 
     return fig
     

@@ -1,8 +1,8 @@
 #127.0.0.1:5000
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 
 #connect to main app.py file and to apps
 from app import app, server
@@ -53,8 +53,6 @@ def display_page(pathname):
        return clustering.layout
     if pathname == '/profiling':
        return profiling_layout.layout
-#    if pathname == '/prototyp':
-#        return prototyp.layout
     else: return error.layout
 
 
