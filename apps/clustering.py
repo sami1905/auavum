@@ -28,115 +28,118 @@ token_model = AutoModel.from_pretrained('sentence-transformers/paraphrase-multil
 layout=dbc.Container([
     dcc.Store(id='vectors', storage_type='memory'),
     dcc.Store(id='clusters', storage_type='memory'),    
-    dcc.Store(id='clustered-data', storage_type='memory'),
+    #dcc.Store(id='clustered-data', storage_type='memory'),
     # if main_data == None
     html.Div([
         dbc.Row([
-        dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height="40px"), href='/'), width=1),
+        dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
         dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
-        dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height="40px"), className='header_logo_bwi', width=1)
+        dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
         ] ,className='header'),
-        html.H1("Oops!", style={'font-size':'100px', 'margin':'40px'}),
-        html.Img(src='../assets/img/404.png', height="400px"),
-        html.H1("404 - PAGE NOT FOUND", style={'font-size':'30px', 'margin':'30px'}),
-        html.P("Die gesuchte Seite scheint nicht zu existieren. Kehre zurück zur Startseite.", className="card-text1", style={'margin-bottom':'20px'}),
-        dcc.Link(dbc.Button("Zurück zur Startseite", color="secondary", className='upload-button'), href='/')
-    ], id='error-clustering', className="alert-wrapper", style={'display':'none'}),
+        html.H1('Oops!', style={'font-size':'100px', 'margin':'40px'}),
+        html.Img(src='../assets/img/404.png', height='400px'),
+        html.H1('404 - PAGE NOT FOUND', style={'font-size':'30px', 'margin':'30px'}),
+        html.P('Die gesuchte Seite scheint nicht zu existieren. Kehre zurück zur Startseite.', className='card-text1', style={'margin-bottom':'20px'}),
+        dcc.Link(dbc.Button('Zurück zur Startseite', color='secondary', className='upload-button'), href='/')
+    ],  id={'type':'errorView', 'index':7}, className='alert-wrapper', style={'display':'none'}),
     
     # Main-content
     html.Div([
-        dbc.Row([
-            dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
-            dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
-            dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
-        ] ,className='header'),
+        html.Div([
+            dbc.Row([
+                dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
+                dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
+                dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
+            ] ,className='header'),
 
-        dbc.Row([
-            dbc.Col([], width=3),
-            dbc.Col(html.Img(src='assets/img/progress4of4.png', className='progress-img'), width=6),
-            dbc.Col(html.Div(id='output-alert-prepare', style={'display':'none'}, className='upload-alert'),width=3)
-        ], className='progress-row'),
+            dbc.Row([
+                dbc.Col([], width=3),
+                dbc.Col(html.Img(src='assets/img/progress4of4.png', className='progress-img'), width=6),
+                dbc.Col(html.Div(id='output-alert-prepare', style={'display':'none'}, className='upload-alert'),width=3)
+            ], className='progress-row'),
 
-        
-        dbc.Card([
-            dbc.CardBody([
-                dbc.Row([
-                    dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
-                    dbc.Col(html.Div([
-                        html.H1('Schritt 4: Ergebnis erhalten'),
-                        html.P('Führe für ausgewählte Freitexte eine hierarchischen Clusteranalyse mithilfe von agglomerativen Berechnungen durch. Wähle hierzu Merklmal (Spalte) und die gewünschte Cluster-Anzahl und erhalte die Datenprofile der berechneten Cluster. Unter dem Tab "Daten" kannst Du Dir jederzeit die geclusterten Daten nach Cluster und Merkmalen (Spalten) filtern und anzeigen lassen. ', style={'margin-bottom': '5px'}, className='card-text1')
-                    ]),width=10),
-                    dbc.Col(width=1),
-                ])
-            ])
-        ], className='deskriptiv-card'),
-        dbc.Card([
-            dbc.CardHeader(
-                dbc.Tabs(
-                    [
-                        dbc.Tab(label="Clustering-Analyse", tab_id="tab-1_clustering"),
-                        dbc.Tab(label="Daten", tab_id="tab-2_clustering"),
-                    ],
-                    id="card-tabs_clustering",
-                    active_tab="tab-1_clustering",
-                )
-            ),
-            dbc.CardBody([
-                html.H4("Clustering-Analyse", style={'text-align': 'left'}),
-                html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                dbc.Row([
-                    dbc.Col(
-                        html.Div([
-                            html.P("Wähle das Merkmal für die Durchführung der Clustering-Analyse:" , className="card-text2", style={"font-weight": "bold", "margin":"20px 0 10px 0"}),
-                            dcc.Dropdown(id="choosen-col", options= [{'label':'-', 'value':'-'}], value='-', searchable=False, clearable=False, className='dropdown'),
-
-                            html.Div(id="dendro", children=[], style={"margin":"20px 0"})
-                        ]), width=7),
-                    dbc.Col(
-                        html.Div([
-                            html.P('Wähle die Cluster-Anzahl:' , className='card-text2', style={"font-weight": "bold", "margin":"20px 0"}),
-                            dcc.RangeSlider(
-                                id='count_clusters',
-                                min=2, max=18, step=1,
-                                marks={2: '2', 3:' ', 4:'4', 5:' ', 6:'6', 7:' ', 8:'8', 9:' ', 10: '10', 11:' ', 12: '12', 13:' ', 14:'14', 15: ' ', 16:'16', 17: ' ', 18: '18'},
-                                value=[1],
-                            ),
-                            html.Div(id='show-cluster-plot', children=None, style={"margin": "20px 0", "width":"650px", "text-align":"center"}),
-                        ], style={"width":"80%", "text-align":"left"}), width=5)
-                ]),
-                html.Div(id='show-clusters', children=None, style={"margin": "10px 0"})
-            ],id="tab_1_clustering", style={"margin": "10px 0"}),
             
-            dbc.CardBody([
-                html.H4("Daten", style={'text-align': 'left'}),
-                html.Hr(style={'margin': '0 0 30px 0', 'padding':'0'}),
-                dbc.Row([
-                    dbc.Col(html.Div([], id='data-info'), width= 4),
-                    dbc.Col(
-                        html.Div([
-                            html.H2('Einstellungen'),
-                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                            
-                            html.P('Filtern nach Cluster: ' , className='card-text2', style={'font-weight': 'bold'}),
-                            dcc.Dropdown(id='filter-cluster', 
-                                                    options=[{'label': 'Alle', 'value': 'Alle'}], 
-                                                    value='Alle', 
-                                                    clearable=False,
-                                                    searchable=False,
-                                                    className='dropdown',
-                                                    style={'font-size':'14px'}),
-                            html.P('Angezeigte Merkmale (Spalten): ' , className='card-text2', style={'font-weight': 'bold'}),
-                            dcc.Dropdown(id='filter-cols', options= [{'label':'-', 'value':'-'}], value=[], multi=True, placeholder='Wähle oder suche Spalten, die entfernt werden sollen...', className='dropdown', style={'font-size':'14px'})
-                        ]), width= 8)
+            dbc.Card([
+                dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
+                        dbc.Col(html.Div([
+                            html.H1('Schritt 4: Ergebnis erhalten'),
+                            html.P('Führe für ausgewählte Freitexte eine hierarchischen Clusteranalyse mithilfe von agglomerativen Berechnungen durch. Wähle hierzu Merklmal (Spalte) und die gewünschte Cluster-Anzahl und erhalte die Datenprofile der berechneten Cluster. Unter dem Tab "Daten" kannst Du Dir jederzeit die geclusterten Daten nach Cluster und Merkmalen (Spalten) filtern und anzeigen lassen. ', style={'margin-bottom': '5px'}, className='card-text1')
+                        ]),width=10),
+                        dbc.Col(width=1),
+                    ])
+                ])
+            ], className='deskriptiv-card'),
+            dbc.Card([
+                dbc.CardHeader(
+                    dbc.Tabs(
+                        [
+                            dbc.Tab(label="Clustering-Analyse", tab_id="tab-1_clustering"),
+                            dbc.Tab(label="Daten", tab_id="tab-2_clustering"),
+                        ],
+                        id="card-tabs_clustering",
+                        active_tab="tab-1_clustering",
+                    )
+                ),
+                dbc.CardBody([
+                    html.H4("Clustering-Analyse", style={'text-align': 'left'}),
+                    html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                    dbc.Row([
+                        dbc.Col(
+                            html.Div([
+                                html.P("Wähle das Merkmal für die Durchführung der Clustering-Analyse:" , className="card-text2", style={"font-weight": "bold", "margin":"20px 0 10px 0"}),
+                                dcc.Dropdown(id="choosen-col", options= [{'label':'-', 'value':'-'}], value='-', searchable=False, clearable=False, className='dropdown'),
 
-                ]),
-                html.Div(id='cluster-table', children=[])
-            ], id="tab_2_clustering")
-        ], id="dendro-card"),
-        
-    ], id='analysis', style={'display':'block'}),
+                                html.Div(id="dendro", children=[], style={"margin":"20px 0"})
+                            ]), width=7),
+                        dbc.Col(
+                            html.Div([
+                                html.P('Wähle die Cluster-Anzahl:' , className='card-text2', style={"font-weight": "bold", "margin":"20px 0"}),
+                                dcc.RangeSlider(
+                                    id='count_clusters',
+                                    min=2, max=18, step=1,
+                                    marks={2: '2', 3:' ', 4:'4', 5:' ', 6:'6', 7:' ', 8:'8', 9:' ', 10: '10', 11:' ', 12: '12', 13:' ', 14:'14', 15: ' ', 16:'16', 17: ' ', 18: '18'},
+                                    value=[1],
+                                ),
+                                html.Div(id='show-cluster-plot', children=None, style={"margin": "20px 0", "width":"650px", "text-align":"center"}),
+                            ], style={"width":"80%", "text-align":"left"}), width=5)
+                    ]),
+                    html.Div(id='show-clusters', children=None, style={"margin": "10px 0"})
+                ],id="tab_1_clustering", style={"margin": "10px 0"}),
+                
+                dbc.CardBody([
+                    html.H4("Daten", style={'text-align': 'left'}),
+                    html.Hr(style={'margin': '0 0 30px 0', 'padding':'0'}),
+                    dbc.Row([
+                        dbc.Col(html.Div([], id='data-info'), width= 4),
+                        dbc.Col(
+                            html.Div([
+                                html.H2('Einstellungen'),
+                                html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                                
+                                html.P('Filtern nach Cluster: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                dcc.Dropdown(id='filter-cluster', 
+                                                        options=[{'label': 'Alle', 'value': 'Alle'}], 
+                                                        value='Alle', 
+                                                        clearable=False,
+                                                        searchable=False,
+                                                        className='dropdown',
+                                                        style={'font-size':'14px'}),
+                                html.P('Angezeigte Merkmale (Spalten): ' , className='card-text2', style={'font-weight': 'bold'}),
+                                dcc.Dropdown(id='filter-cols', options= [{'label':'-', 'value':'-'}], value=[], multi=True, placeholder='Wähle oder suche Spalten, die entfernt werden sollen...', className='dropdown', style={'font-size':'14px'})
+                            ]), width= 8)
 
-    html.Div([], id='clusterview', style={'display':'none'})
+                    ]),
+                    html.Div(id='cluster-table', children=[])
+                ], id="tab_2_clustering")
+            ], id="dendro-card"),
+            
+        ], id='analysis', style={'display':'block'}),
+
+        html.Div([], id='clusterview', style={'display':'none'})
+
+    ], id='clustering-content'),
 ], className='content', fluid=True)
 
 @app.callback(Output('choosen-col', 'options'),
@@ -288,21 +291,22 @@ def show_table(data, clusters, show_cols, col, filter_cluster):
 def update_drops(data, clusters, value):
     options1 = []
     options2 = [{'label':"Alle", 'value':"Alle"}]
-    df = pd.read_json(data, orient='split')
-    listOfCols = df.columns
+    if data is not None:
+        df = pd.read_json(data, orient='split')
+        listOfCols = df.columns
 
-    if value == []:
-        value = listOfCols
+        if value == []:
+            value = listOfCols
 
-    for col in listOfCols:
-        options1.append({'label':col, 'value':col})
+        for col in listOfCols:
+            options1.append({'label':col, 'value':col})
 
-    
-    if clusters != None:
-        clusters = list(dict.fromkeys(clusters))
-        clusters.sort()
-        for clu in clusters:
-            options2.append({'label':clu, 'value':clu})
+        
+        if clusters != None:
+            clusters = list(dict.fromkeys(clusters))
+            clusters.sort()
+            for clu in clusters:
+                options2.append({'label':clu, 'value':clu})
 
     return options2, options1, value
 
@@ -311,7 +315,6 @@ def update_drops(data, clusters, value):
 
 @app.callback([Output('show-clusters', 'children'),
                 Output('clusters', 'data'),
-                Output('clustered-data', 'data'),
                 Output('show-cluster-plot', 'children')],
             [Input('count_clusters', 'value')],
             [State('main_data_after_preperation', 'data'), State('choosen-col', 'value'), State('vectors', 'data')])
@@ -383,9 +386,9 @@ def show_clusters(k, data, col, vectors):
             children.append(new_collapse)
         
         
-        return children, df["Cluster"], df.to_json(date_format='iso', orient='split'), dcc.Graph(figure=scatter)
+        return children, df["Cluster"], dcc.Graph(figure=scatter)
     else:
-        return None, None, None, None
+        return None, None, None
 
    
 @app.callback(
@@ -407,34 +410,37 @@ def toggle_collapse(n, is_open):
             [State('listOfFrei', 'data'),
             State('listOfFest', 'data'),
             State('main_data_after_preperation', 'data'),
-            State('clustered-data', 'data'),
+            State('clusters', 'data'),
             State('choosen-col', 'value')])
-def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, data, df_cluster, col):
-    if df_cluster is not None:
-        df_cluster = pd.read_json(df_cluster, orient='split')
-    
+def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, data, clusters, col):
     view=[]
     style1 = {'display':'block'}
     style2 = {'display':'none'}
-    df = pd.read_json(data, orient='split')
-    if col != '-':
-        df = df.dropna(subset=[col])
-    input_id = dash.callback_context.triggered[0]["prop_id"].split(".")[0]
     
-    if "index" in input_id:
-        cluster_nr = json.loads(input_id)["index"]
-        for n, i in enumerate(clicks):
-            if i != 0:
-                clicks[n] = 0
-                view = cView.show_cluster(cluster_nr, df_cluster, listOfFrei, listOfFest, col)
+    if data is not None and col != "-":
+        df = pd.read_json(data, orient='split')
+        df_cluster = df.dropna(subset=[col])
+        df_cluster["Cluster"] = clusters
+    
+        input_id = dash.callback_context.triggered[0]["prop_id"].split(".")[0]
+    
+        if "index" in input_id:
+            cluster_nr = json.loads(input_id)["index"]
+            for n, i in enumerate(clicks):
+                if i != 0:
+                    clicks[n] = 0
+                    view = cView.show_cluster(cluster_nr, df_cluster, listOfFrei, listOfFest, col)
 
-    if view != []:
-        return view, style1, style2, clicks, back_clicks 
+        if view != []:
+            return view, style1, style2, clicks, back_clicks 
     
-    for n, i in enumerate(back_clicks):
-        if i != 0:
-            back_clicks[n] = 0
-            return view, style2, style1, clicks, back_clicks 
+        for n, i in enumerate(back_clicks):
+            if i != 0:
+                back_clicks[n] = 0
+                return view, style2, style1, clicks, back_clicks
+        else:
+            return view, style2, style1, clicks, back_clicks
+ 
             
     
     else:
@@ -564,10 +570,12 @@ def new_transformation(sentences):
         model_output = token_model(**encoded_input)
 
     # Perform pooling. In this case, max pooling.
-    sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-    vecs = sentence_embeddings
+    vecs = mean_pooling(model_output, encoded_input['attention_mask'])
+    print("vecs erstellt")
     reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine')
+    print("Zwischenschritt von vec2d")
     vec2d= reducer.fit_transform(vecs)
+    print("vec2d erstellt")
     return vec2d
 
 
@@ -581,11 +589,18 @@ def plot_2d(vectors, clusterLabels):
     return fig
     
 
-       
-
+@app.callback([Output({'type':'errorView', 'index':7}, 'style'), Output('clustering-content', 'style')],
+               [Input('main_data_after_preperation', 'data'),
+               Input('listOfFest', 'data'),
+               Input('listOfFrei', 'data')])
+def error2(main_data, d1, d2):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
     
-
-
-
-
+    
+    if main_data is None or d1 is None or d2 is None:
+        return style1, style2
+    
+    else:
+        return style2, style1
 
