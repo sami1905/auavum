@@ -273,6 +273,24 @@ def choose_modal_settings(value):
     if value == 3:
         return style2, style1, style2
 
+@app.callback([Output({'type':'dynamic-chart-x', 'index': MATCH}, 'value'),
+                Output({'type':'dynamic-chart-y', 'index': MATCH}, 'value')],
+                Input({'type':'dynamic-histo-x', 'index': MATCH}, 'value'),
+                Input({'type':'dynamic-histo-y', 'index': MATCH}, 'value'),
+                State('listOfFest', 'data'), 
+                State({'type':'dynamic-chart-x', 'index': MATCH}, 'value'),
+                State({'type':'dynamic-chart-y', 'index': MATCH}, 'value'))
+def update_desc(x_values, y_values, listOfFest, beschriftungX, beschriftungY):
+    
+    if listOfFest is not None:
+        if y_values == 'Anzahl':
+            beschriftungY = y_values
+        else:
+            beschriftungY = listOfFest[y_values]
+
+        beschriftungX = listOfFest[x_values]
+    
+    return beschriftungX, beschriftungY
 
 
 
@@ -315,7 +333,6 @@ def update_graphs(chart_type, x_values, y_values, groub_by, pie_col, data, n1, n
     fig = {}
     cur_headliner = headliner
     preheadliner = headliner
-    
 
     if description is None or description == "":
         chart_description = None

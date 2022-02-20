@@ -162,8 +162,14 @@ def add_upload_data(list_of_contents, list_of_names, list_of_dates):
             children=[
                 dbc.Alert([
                     dbc.Row([
-                        html.Img(src='/assets/img/alert_success_icon_15x15.png', width='15px', height='15px'),
-                        html.P('Das Hochladen der Datei(en) war erfolgreich!', className='card-text2')
+                        dbc.Col([
+                            html.Div([
+                                html.Img(src='/assets/img/alert_success_icon_15x15.png', width='15px', height='15px')
+                            ]),
+                            html.P('Das Hochladen der Datei(en) war erfolgreich!', className='card-text2')
+
+                        ])
+                        
                     ], className='alert-headline'),
                     html.Hr(style={'padding':'0', 'margin':'0'}),
                     html.P('Eine Übersicht der hochgeladenen Datei(en) und ein Ausschnitt ihrer Inhalte werden nun dargestellt. Du kannst in der Übersicht Dateien entfernen und wieder hinzufügen oder erneut welche hochladen.', className='card-text3', style={'margin':'3px'})    
@@ -179,8 +185,12 @@ def add_upload_data(list_of_contents, list_of_names, list_of_dates):
             children = [
                 dbc.Alert([
                     dbc.Row([
-                        html.Img(src='/assets/img/alert_error_icon_15x15.png', width='15px', height='15px'),
-                        html.P('Das Hochladen der Datei(en) ist fehlgeschlagen!', className='card-text2')
+                        dbc.Col([
+                            html.Div([
+                                html.Img(src='/assets/img/alert_error_icon_15x15.png', width='15px', height='15px'),
+                            ]),
+                            html.P('Das Hochladen der Datei(en) ist fehlgeschlagen!', className='card-text2')
+                        ])
                     ], className='alert-headline'),
                     html.P('Fehlerhafte Datei(en): ', className='card-text3', style={'margin': '0px'}),
                     html.Div(children=getFilename(img_filename, wrong_filename), style={'padding':'0', 'margin':'0'}),
