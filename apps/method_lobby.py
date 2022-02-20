@@ -15,7 +15,7 @@ layout = dbc.Container([
     html.Div([
         dbc.Row([
         dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
-        dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
+        dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=2),
         dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
         ] ,className='header'),
         html.H1('Oops!', style={'font-size':'100px', 'margin':'40px'}),
@@ -29,7 +29,7 @@ layout = dbc.Container([
     html.Div([
         dbc.Row([
             dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
-            dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
+            dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=2),
             dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
         ] ,className='header'),
 
@@ -47,7 +47,7 @@ layout = dbc.Container([
                     dbc.Col(html.Div([
                         html.H1('Schritt 3: Verfahren wählen'),
                         html.P('Wähle ein Verfahren mit dem die Auswertung und Analyse durchgeführt werden soll.', style={'margin-bottom': '5px'}, className='card-text1')
-                    ]),width=10),
+                    ]),width=2),
                     dbc.Col(width=1),
                 ])
             ])
@@ -68,8 +68,8 @@ layout = dbc.Container([
                                     html.H4('Data-Profiling', className='card-title'),
                                     html.P('Lass Dir ein Profil zu den Merkmalen (Spalten) ausgeben.', className='card-text3'),
                                     dbc.Row([
-                                        dbc.Col(width=2),
-                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/profiling'),width=10),
+                                        dbc.Col(width=11),
+                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/profiling'),width=1),
                                     ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                 ], className='method-body'), width=9)
                             ])
@@ -84,8 +84,8 @@ layout = dbc.Container([
                                     className='card-text3',
                                 ),
                                 dbc.Row([
-                                    dbc.Col(width=2),
-                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/diagramm-dashboard'),width=10),
+                                    dbc.Col(width=11),
+                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/diagramm-dashboard'),width=1),
                                 ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                         ], className='method-body'), width=9)
                         ])
@@ -101,8 +101,8 @@ layout = dbc.Container([
                                     className='card-text3',
                                 ),
                                 dbc.Row([
-                                    dbc.Col(width=2),
-                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/interaktive-diagrame'),width=10),
+                                    dbc.Col(width=11),
+                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/interaktive-diagrame'),width=1),
                                 ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                     
                                     
@@ -132,8 +132,8 @@ layout = dbc.Container([
                                     className='card-text3',
                                 ),
                                 dbc.Row([
-                                    dbc.Col(width=2),
-                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/clustering'),width=10),
+                                    dbc.Col(width=11),
+                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/clustering'),width=1),
                                 ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                             ], className='method-body'), width=9)
                         ])
@@ -148,8 +148,8 @@ layout = dbc.Container([
                                        className='card-text3',
                                     ),
                                     dbc.Row([
-                                        dbc.Col(width=2),
-                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/summarizer'),width=10),
+                                        dbc.Col(width=11),
+                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/summarizer'),width=1),
                                     ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                 ], className='method-body'), width=9)
                             ])
@@ -164,8 +164,8 @@ layout = dbc.Container([
                                        className='card-text3',
                                     ),
                                     dbc.Row([
-                                        dbc.Col(width=2),
-                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/sentiment'),width=10),
+                                        dbc.Col(width=11),
+                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/sentiment'),width=1),
                                     ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                 ], className='method-body'), width=9)
                             ])
