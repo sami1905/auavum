@@ -15,7 +15,7 @@ layout = dbc.Container([
     html.Div([
         dbc.Row([
         dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
-        dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=2),
+        dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
         dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
         ] ,className='header'),
         html.H1('Oops!', style={'font-size':'100px', 'margin':'40px'}),
@@ -29,7 +29,7 @@ layout = dbc.Container([
     html.Div([
         dbc.Row([
             dbc.Col(dcc.Link(html.Img(src='/assets/img/logo_smartistics40x40.png', height='40px'), href='/'), width=1),
-            dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=2),
+            dbc.Col(html.H1('Auswertung und Analyse von Umfragen'), width=10),
             dbc.Col(html.Img(src='/assets/img/bwi-logo_84x40.png', height='40px'), className='header_logo_bwi', width=1)
         ] ,className='header'),
 
@@ -47,7 +47,7 @@ layout = dbc.Container([
                     dbc.Col(html.Div([
                         html.H1('Schritt 3: Verfahren wählen'),
                         html.P('Wähle ein Verfahren mit dem die Auswertung und Analyse durchgeführt werden soll.', style={'margin-bottom': '5px'}, className='card-text1')
-                    ]),width=2),
+                    ]),width=10),
                     dbc.Col(width=1),
                 ])
             ])
