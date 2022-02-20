@@ -66,17 +66,11 @@ layout = dbc.Container([
                             dbc.Col(dbc.CardImg(src='assets/img/profiling200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),
                             dbc.Col(dbc.CardBody([
                                     html.H4('Data-Profiling', className='card-title'),
-                                    html.P(
-                                        '',
-                                    className='card-text3',
-                                    ),
+                                    html.P('Lass Dir ein Profil zu den Merkmalen (Spalten) ausgeben.', className='card-text3'),
                                     dbc.Row([
-                                        dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/profiling'),
-                                        dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
-                                                    'color' : '#3c4143',
-                                                    'textAlign': 'center',
-                                                    'font-size' : '14px'})
-                                        ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                                        dbc.Col(width=2),
+                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/profiling'),width=10),
+                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                 ], className='method-body'), width=9)
                             ])
                     ], className='method-card'), width=4),
@@ -86,16 +80,13 @@ layout = dbc.Container([
                         dbc.Col(dbc.CardBody([
                                 html.H4('Diagramm-Dashboard', className='card-title'),
                                 html.P(
-                                    '',
+                                    'Erstelle Dein eigenes Diagramm-Dashboard zu Deinen hochgeladenen Daten.',
                                     className='card-text3',
                                 ),
                                 dbc.Row([
-                                    dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/diagramm-dashboard'),
-                                    dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
-                                                'color' : '#3c4143',
-                                                'textAlign': 'center',
-                                                'font-size' : '14px'})
-                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                                    dbc.Col(width=2),
+                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/diagramm-dashboard'),width=10),
+                                ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                         ], className='method-body'), width=9)
                         ])
                     ], className='method-card'), width=4),
@@ -106,17 +97,13 @@ layout = dbc.Container([
                         dbc.Col(dbc.CardBody([
                                 html.H4('Interaktive Diagramme', className='card-title'),
                                 html.P(
-                                    '',
+                                    'Erforsche Deine hochgeladene Daten mithilfe unterschiedlicher interaktiver Diagramme.',
                                     className='card-text3',
                                 ),
                                 dbc.Row([
-                                    dbc.Col(width=4),
-                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/interaktive-diagrame'),width=4),
-                                    # dbc.Col(dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
-                                    #             'color' : '#3c4143',
-                                    #             'textAlign': 'center',
-                                    #             'font-size' : '14px'}),width=4)
-                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                                    dbc.Col(width=2),
+                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/interaktive-diagrame'),width=10),
+                                ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                     
                                     
                             ], className='method-body'), width=9)
@@ -141,58 +128,48 @@ layout = dbc.Container([
                         dbc.Col(dbc.CardBody([
                                 html.H4('Clustering-Analyse', className='card-title'),
                                 html.P(
-                                    '',
+                                    'Führe für ausgewählte Freitexte eine hierarchischen Clusteranalyse mithilfe von agglomerativen Berechnungen durch. Wähle die gewünschte Cluster-Anzahl und erhalte Dashboard mit semantischen Analysen zu den erstellten Cluster.',
                                     className='card-text3',
                                 ),
                                 dbc.Row([
-                                    dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/clustering'),
-                                    dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
-                                                'color' : '#3c4143',
-                                                'textAlign': 'center',
-                                                'font-size' : '14px'})
-                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                                    dbc.Col(width=2),
+                                    dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/clustering'),width=10),
+                                ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                             ], className='method-body'), width=9)
                         ])
                     ], className='method-card'), width=4),
-                    # dbc.Col(dbc.Card([
-                    #     dbc.Row([
-                    #     dbc.Col(dbc.CardImg(src='assets/img/sentiment200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),
-                    #     dbc.Col(dbc.CardBody([
-                    #             html.H3('Sentiment-Analyse', className='card-title'),
-                    #             html.P(
-                    #                 '',
-                    #                 className='card-text3',
-                    #             ),
-                    #             dbc.Row([
-                    #                 #dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/deskriptiv'),
-                    #                 dbc.Button('Bald verfügbar', color='secondary', style={'background': '#f2f2f2',
-                    #                             'color' : '#3c4143',
-                    #                             'textAlign': 'center',
-                    #                             'font-size' : '14px'})
-                    #                 ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
-                    #         ], className='method-body'), width=9)
-                    #     ], className='soon')
-                    # ], className='method-card'), width=4),
                     dbc.Col(dbc.Card([
                         dbc.Row([
                             dbc.Col(dbc.CardImg(src='assets/img/summarization200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),
                             dbc.Col(dbc.CardBody([
                                     html.H3('Text Summarizer', className='card-title'),
                                     html.P(
-                                        '',
+                                        'Lasse Dir eine Zusammenfassung der in einer ausgewählten Spalte enthaltenden Freitext ausgeben.',
                                        className='card-text3',
                                     ),
                                     dbc.Row([
-                                        dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/summarizer'),
-                                        dbc.Button('Bald verfügbar', color='secondary', style={'background': '#f2f2f2',
-                                                    'color' : '#3c4143',
-                                                    'textAlign': 'center',
-                                                    'font-size' : '14px'})
-                                        ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                                        dbc.Col(width=2),
+                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/summarizer'),width=10),
+                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                 ], className='method-body'), width=9)
                             ])
                     ], className='method-card'), width=4),
-                    dbc.Col(width=4),
+                    dbc.Col(dbc.Card([
+                        dbc.Row([
+                            dbc.Col(dbc.CardImg(src='assets/img/sentiment200x150.png', top=True, style={'border-right': '1px #3c414333 solid'}),width=3),
+                            dbc.Col(dbc.CardBody([
+                                    html.H3('Sentiment Analyse', className='card-title'),
+                                    html.P(
+                                        'Lasse Dir mithilfe der Sentiment Analyse das Stimmungsbild von Freitexten einer ausgewählten Spalte ausgeben.',
+                                       className='card-text3',
+                                    ),
+                                    dbc.Row([
+                                        dbc.Col(width=2),
+                                        dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/sentiment'),width=10),
+                                    ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
+                                ], className='method-body'), width=9)
+                            ])
+                    ], className='method-card'), width=4),
                 ]),
             ])
         ], className='lobby-card'),

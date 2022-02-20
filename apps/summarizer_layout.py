@@ -48,7 +48,7 @@ layout=dbc.Container([
                     dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
                     dbc.Col(html.Div([
                         html.H1('Schritt 4: Ergebnis erhalten'),
-                        html.P('Erstelle Dein eigenes Diagramm-Dashboard zu Deinen hochgeladenen Daten.', style={'margin-bottom': '5px'}, className='card-text1')
+                        html.P('Lasse Dir eine Zusammenfassung der in einer ausgewählten Spalte enthaltenden Freitext ausgeben.', style={'margin-bottom': '5px'}, className='card-text1')
                     ]),width=10),
                     dbc.Col(width=1),
                 ])
@@ -71,16 +71,20 @@ layout=dbc.Container([
                     
                     html.H4("Text Summarizer", style={'text-align': 'left'}),
                     html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                    html.P('Wähle die Freitexte aus, die zusammegefasst werden sollen:' , className='card-text2', style={'font-weight': 'bold'}),
-                    dcc.Dropdown(id='text-dropdown', 
+                    html.Div([
+                        html.P('Wähle die Freitexte aus, die zusammegefasst werden sollen:' , className='card-text2', style={'font-weight': 'bold'}),
+                        dcc.Dropdown(id='text-dropdown', 
                                     	    options=[{'label': '-', 'value': '-'}], 
                                             value='-', 
                                             clearable=False,
                                             searchable=False,
-                                            className='dropdown'),
+                                            className='dropdown')
+
+                    ], style={'text-align': 'left'}),
+                    
                     html.Div([], id="summarized-text"),
                     
-            ],id="tab_summarizer"),
+            ],id="tab_summarizer", style={'text-align': 'left'}),
             
             dbc.CardBody([
                 html.H4("Daten", style={'text-align': 'left'}),

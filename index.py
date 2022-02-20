@@ -6,7 +6,7 @@ from dash import html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import summarizer_layout, upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard_layout, interactive_charts_layout, topic, clustering, profiling_layout
+from apps import summarizer_layout, upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard_layout, interactive_charts_layout, topic, clustering, profiling_layout, sentiment_layout
 
 
 
@@ -53,6 +53,8 @@ def display_page(pathname):
        return clustering.layout
     if pathname == '/profiling':
        return profiling_layout.layout
+    if pathname == '/sentiment':
+       return sentiment_layout.layout
     else: return error.layout
 
 

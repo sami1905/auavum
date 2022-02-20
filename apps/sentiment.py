@@ -27,12 +27,12 @@ def layout(text):
             
         html.Div([
             
-        ], id="summary-content")
+        ], id="sentiment-content")
             
     ],style={'text-align':'left'}, fluid=True)
     return children
 
-@app.callback(Output("summary-content", "children"), 
+@app.callback(Output("sentiment-content", "children"), 
                 [Input("count_sent", "value"),
                 Input('summary-data', 'data')]
 )

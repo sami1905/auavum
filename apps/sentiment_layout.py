@@ -7,7 +7,7 @@ import plotly.express as px
 from app import app
 
 import numpy as np
-from apps import profiler
+from apps import sentiment
 
 
 layout=dbc.Container([
@@ -25,7 +25,7 @@ layout=dbc.Container([
         html.H1('404 - PAGE NOT FOUND', style={'font-size':'30px', 'margin':'30px'}),
         html.P('Die gesuchte Seite scheint nicht zu existieren. Kehre zurück zur Startseite.', className='card-text1', style={'margin-bottom':'20px'}),
         dcc.Link(dbc.Button('Zurück zur Startseite', color='secondary', className='upload-button'), href='/')
-    ],  id={'type':'errorView', 'index':6}, className='alert-wrapper', style={'display':'none'}),
+    ],  id={'type':'errorView', 'index':8}, className='alert-wrapper', style={'display':'none'}),
     
     # Main-content
     html.Div([
@@ -48,7 +48,7 @@ layout=dbc.Container([
                     dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
                     dbc.Col(html.Div([
                         html.H1('Schritt 4: Ergebnis erhalten'),
-                        html.P('Lass Dir ein Profil zu den Merkmalen (Spalten) ausgeben.', style={'margin-bottom': '5px'}, className='card-text1')
+                        html.P('Lasse Dir mithilfe der Sentiment Analyse das Stimmungsbild von Freitexten einer ausgewählten Spalte ausgeben.', style={'margin-bottom': '5px'}, className='card-text1')
                     ]),width=10),
                     dbc.Col(width=1),
                 ])
@@ -59,34 +59,43 @@ layout=dbc.Container([
             
                 dbc.Tabs(
                     [
-                        dbc.Tab(label="Data Profiling", tab_id="tab-profiling"),
-                        dbc.Tab(label="Daten", tab_id="tab-data"),
+                        dbc.Tab(label="Sentiment Analyse", tab_id="tab-sentiment"),
+                        dbc.Tab(label="Daten", tab_id="tab-data5"),
                     ],
                     id="card-tabs",
-                    active_tab="tab-profiling",
+                    active_tab="tab-sentiment",
                     style={'background': '#f2f2f263'}
                 ),
             dbc.CardBody([
                     
                     
-                    html.H4("Data Profiling", style={'text-align': 'left'}),
+                    html.H4("Sentiment Analyse", style={'text-align': 'left'}),
                     html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                    html.P('Gib an von welchen Merkmalen (Spalten) ein Profil erstellt werden soll:', className='card-text2', style={'margin-top': '40px', 'font-weight': 'bold'}),
-                    dcc.Dropdown(id='profile-dropdown', options=[{'label':'-', 'value':'-'}], value=None, multi=True, placeholder='Füge Merkmale (Spalten) hinzu ...', style={'margin': '0'}, className='dropdown'),
-                    dbc.Row([],id="profiles"),
+                    html.Div([
+                        html.P('Wähle die Freitexte aus, von denen ein Stimmungsbild erstellt werden sollen:' , className='card-text2', style={'font-weight': 'bold'}),
+                        dcc.Dropdown(id='sentiment-dropdown', 
+                                    	    options=[{'label': '-', 'value': '-'}], 
+                                            value='-', 
+                                            clearable=False,
+                                            searchable=False,
+                                            className='dropdown')
+
+                    ], style={'text-align': 'left'}),
                     
-            ],id="tab_profiles"),
+                    html.Div([], id="sentiment-product"),
+                    
+            ],id="tab_sentiment", style={'text-align': 'left'}),
             
             dbc.CardBody([
                 html.H4("Daten", style={'text-align': 'left'}),
                 html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                html.Div(id='show-profiles-data')
-            ], id="tab_data4")
-        ], className='deskriptiv-card',style={'text-align':'left'})
-    ], id="profiling"),
+                html.Div(id='show-sentiment-data')
+            ], id="tab_data5")
+        ], className='deskriptiv-card')
+    ], id="sentiment"),
 ], className='content', fluid=True)
 
-@app.callback(Output('show-profiles-data', 'children'), Input('main_data_after_preperation', 'data'))
+@app.callback(Output('show-sentiment-data', 'children'), Input('main_data_after_preperation', 'data'))
 def show_data(data):
     if data is not None:
         df = pd.read_json(data, orient='split')
@@ -97,13 +106,13 @@ def show_data(data):
     return None
 
 @app.callback(
-    [Output("tab_profiles", "style"), Output("tab_data4", "style")], [Input("card-tabs", "active_tab")]
+    [Output("tab_sentiment", "style"), Output("tab_data5", "style")], [Input("card-tabs", "active_tab")]
 )
 def tab_content(active_tab):
     style1 = {'display':'block'}
     style2 = {'display':'none'}
 
-    if active_tab == 'tab-profiling':
+    if active_tab == 'tab-sentiment':
         return style1, style2
     
     else: 
@@ -113,7 +122,7 @@ def tab_content(active_tab):
 
 
 
-@app.callback([Output({'type':'errorView', 'index':6}, 'style'), Output('profiling', 'style')],
+@app.callback([Output({'type':'errorView', 'index':8}, 'style'), Output('sentiment', 'style')],
                [Input('main_data_after_preperation', 'data'),
                Input('listOfFest', 'data'),
                Input('listOfFrei', 'data')])
@@ -128,10 +137,10 @@ def error2(main_data, d1, d2):
     else:
         return style2, style1
 
-@app.callback(Output('profile-dropdown', 'options'),
-               [Input('listOfFest', 'data')])
-def update_profile_dropdown(cols):
-    options=[]
+@app.callback(Output('sentiment-dropdown', 'options'),
+               [Input('listOfFrei', 'data')])
+def update_text_dropdown(cols):
+    options=[{'label':'-', 'value':'-'}]
     if cols is not None:
         
         for col in cols:
@@ -139,16 +148,26 @@ def update_profile_dropdown(cols):
             
     return options
 
-@app.callback(Output('profiles', 'children'),
-               [Input('profile-dropdown', 'value'),
+@app.callback(Output('sentiment-product', 'children'),
+               [Input('sentiment-dropdown', 'value'),
                Input('main_data_after_preperation', 'data')])
-def update_profile_content(value, data):
-    children=[]
+def update_text_dropdown(value, data):
+    
     if data is not None:
         df = pd.read_json(data, orient='split')
         
-        if value != None:
-            for col in value:
-                children.append(dbc.Col(profiler.profile(df, col), width=6, style={'border': '0px 1px #3c414340 solid'}))
+        if value != "-":
+            df = df.dropna(subset=[value])
             
-    return children
+            texts = df[value].values
+            summarizeTheText = ""
+
+    
+            for text in texts:
+                summarizeTheText = summarizeTheText + text + " "
+        
+            return sentiment.layout(summarizeTheText)
+        else:
+            return None
+            
+    return None
