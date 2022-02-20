@@ -13,7 +13,7 @@ import random
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-from apps import summary, profiler, interactive_charts
+from apps import summary, profiler, interactive_charts, chart_dashboard
 
 
 import functions.dataProfiling as dProfile
@@ -170,6 +170,16 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                         ])
                     ], className='deskriptiv-card'), width = 4)
             ]),
+            dbc.Row([
+                dbc.Col(
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H4("Diagramm-Dashboard:", style={'text-align': 'left'}),
+                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                            html.Div([chart_dashboard.layout], style={'text-align': 'left'})
+                        ])
+                ], className='deskriptiv-card'),width=12)   
+            ]), 
 
             dbc.Row([
                 dbc.Col(
@@ -229,8 +239,7 @@ def getPie(col, data):
                Input('clusterdata', 'data')])
 def update_profile_content(value, data):
     if data is not None:
-        df = pd.read_json(data, orient='split')           
-        print(value)
+        df = pd.read_json(data, orient='split')
         return profiler.profile(df, value)
     else:
         return None
