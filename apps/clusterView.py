@@ -13,7 +13,7 @@ import random
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-from apps import summary, profiler
+from apps import summary, profiler, interactive_charts
 
 
 import functions.dataProfiling as dProfile
@@ -187,27 +187,35 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                     html.Div([], id="prof"),
                         ])
                     ], className='deskriptiv-card'), width = 6),
-                dbc.Col(dbc.Card([
-                    dbc.CardBody([
-                        html.H4("Sentiment-Analyse:", style={'text-align': 'left'}),
-                        html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                        html.P("Polarität",style={'margin': '4%'}),
-                        dcc.Graph(id="scatter-graph", style={'margin': '2%'}, figure = scatter),
-                        dbc.Row([
-                            dcc.Graph(id="histo-graph", style={'margin': '2%'}, figure = histo),
-                            dcc.Graph(id="histo-graph2", style={'margin': '2%'}, figure = histo2),
-
-                        ]),
-                        dcc.Graph(id="pie-graph", style={'margin': '2%'}, figure = pie),
-                        
-                        
-                            
+                dbc.Col(
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H4("Interaktive Diagramme:", style={'text-align': 'left'}),
+                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                            html.Div([interactive_charts.layout], style={'text-align': 'left'})
                         ])
-                ], className='deskriptiv-card'),width=6)   
-            ])           
-                    
+                    ], className='deskriptiv-card'), width = 6)
+            ]),
+            dbc.Row([
+                dbc.Col(
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H4("Sentiment-Analyse:", style={'text-align': 'left'}),
+                            html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                            html.P("Polarität",style={'margin': '4%'}),
+                            dcc.Graph(id="scatter-graph", style={'margin': '2%'}, figure = scatter),
+                            dbc.Row([
+                                dcc.Graph(id="histo-graph", style={'margin': '2%'}, figure = histo),
+                                dcc.Graph(id="histo-graph2", style={'margin': '2%'}, figure = histo2),
+
+                            ]),
+                            dcc.Graph(id="pie-graph", style={'margin': '2%'}, figure = pie),
+                        ])
+                ], className='deskriptiv-card'),width=12)   
+            ]) 
         ])
-    ]
+    ]          
+
 
     return children
 

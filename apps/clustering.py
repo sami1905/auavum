@@ -572,7 +572,7 @@ def new_transformation(sentences):
     # Perform pooling. In this case, max pooling.
     vecs = mean_pooling(model_output, encoded_input['attention_mask'])
     print("vecs erstellt")
-    reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine')
+    reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine', min_dist=0.5)
     print("Zwischenschritt von vec2d")
     vec2d= reducer.fit_transform(vecs)
     print("vec2d erstellt")
