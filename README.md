@@ -78,7 +78,7 @@ index.py
 
 #connect to main app.py file and to apps
 from app import app, server
-import dash_html_components as html
+from dash import html
 
 app.layout = dbc.Container([
     html.P('Hello there!'),

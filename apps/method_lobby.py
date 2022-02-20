@@ -112,10 +112,10 @@ layout = dbc.Container([
                                 dbc.Row([
                                     dbc.Col(width=4),
                                     dbc.Col(dcc.Link(dbc.Button('Auswählen', color='secondary', style={'font-size' : '14px'}), href='/interaktive-diagrame'),width=4),
-                                    dbc.Col(dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
-                                                'color' : '#3c4143',
-                                                'textAlign': 'center',
-                                                'font-size' : '14px'}),width=4)
+                                    # dbc.Col(dbc.Button('Info', color='secondary', style={'background': '#f2f2f2',
+                                    #             'color' : '#3c4143',
+                                    #             'textAlign': 'center',
+                                    #             'font-size' : '14px'}),width=4)
                                     ],style={'position':'absolute', 'bottom':'0', 'left':'15px'})
                                     
                                     
