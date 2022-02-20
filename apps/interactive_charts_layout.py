@@ -48,7 +48,7 @@ layout=dbc.Container([
                     dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
                     dbc.Col(html.Div([
                         html.H1('Schritt 4: Ergebnis erhalten'),
-                        html.P('Erstelle Dein eigenes Diagramm-Dashboard zu Deinen hochgeladenen Daten.', style={'margin-bottom': '5px'}, className='card-text1')
+                        html.P('Erforsche Deine hochgeladene Daten mithilfe unterschiedlicher interaktiver Diagramme.', style={'margin-bottom': '5px'}, className='card-text1')
                     ]),width=10),
                     dbc.Col(width=1),
                 ])

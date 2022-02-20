@@ -48,7 +48,7 @@ layout=dbc.Container([
                     dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
                     dbc.Col(html.Div([
                         html.H1('Schritt 4: Ergebnis erhalten'),
-                        html.P('Lasse Dir eine Zusammenfassung der in einer ausgewählten Spalte enthaltenden Freitext ausgeben.', style={'margin-bottom': '5px'}, className='card-text1')
+                        html.P('Lasse Dir eine Zusammenfassung der in einer ausgewählten Spalte enthaltenden Freitext ausgeben.', style={'margin-bottom': '5px', 'font-weight': 'bold'}, className='card-text1')
                     ]),width=10),
                     dbc.Col(width=1),
                 ])
