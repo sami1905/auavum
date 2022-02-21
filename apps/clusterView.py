@@ -13,7 +13,7 @@ import random
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-from apps import summary, profiler, interactive_charts, chart_dashboard
+from apps import summary, profiler, interactive_charts, chart_dashboard, sentiment
 
 
 import functions.dataProfiling as dProfile
@@ -42,6 +42,7 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
     index_str = []
 
     texts = df[col].values
+    ind = df.index.values
     summarizeTheText = ""
 
     
@@ -212,14 +213,8 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                         dbc.CardBody([
                             html.H4("Sentiment-Analyse:", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
-                            html.P("Polarität",style={'margin': '4%'}),
-                            dcc.Graph(id="scatter-graph", style={'margin': '2%'}, figure = scatter),
-                            dbc.Row([
-                                dcc.Graph(id="histo-graph", style={'margin': '2%'}, figure = histo),
-                                dcc.Graph(id="histo-graph2", style={'margin': '2%'}, figure = histo2),
-
-                            ]),
-                            dcc.Graph(id="pie-graph", style={'margin': '2%'}, figure = pie),
+                            html.Div(sentiment.layout(texts, ind))
+                            
                         ])
                 ], className='deskriptiv-card'),width=12)   
             ]) 

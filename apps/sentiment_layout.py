@@ -48,7 +48,7 @@ layout=dbc.Container([
                     dbc.Col(dcc.Link(dbc.Button("Zurück", color="secondary", style={'position' : 'relative', 'left': '-25px'}), href="/verfahren-waehlen"),width=1),
                     dbc.Col(html.Div([
                         html.H1('Schritt 4: Ergebnis erhalten'),
-                        html.P('Lasse Dir mithilfe der Sentiment Analyse das Stimmungsbild von Freitexten einer ausgewählten Spalte ausgeben.', style={'margin-bottom': '5px', 'font-weight': 'bold'}, className='card-text1')
+                        html.P('Lasse Dir mithilfe der Sentiment Analyse das Stimmungsbild von Freitexten einer ausgewählten Spalte ausgeben.', style={'margin-bottom': '5px'}, className='card-text1')
                     ]),width=10),
                     dbc.Col(width=1),
                 ])
@@ -155,18 +155,18 @@ def update_text_dropdown(value, data):
     
     if data is not None:
         df = pd.read_json(data, orient='split')
-        
+        df = df.set_index(df.columns[0])
+       
         if value != "-":
             df = df.dropna(subset=[value])
             
             texts = df[value].values
-            summarizeTheText = ""
-
-    
-            for text in texts:
-                summarizeTheText = summarizeTheText + text + " "
+            index = df.index.values
+            
+          
+            
         
-            return sentiment.layout(summarizeTheText)
+            return sentiment.layout(texts, index)
         else:
             return None
             
