@@ -102,9 +102,9 @@ def get_sentiment(texts, index):
         posTabl.append(html.P('Text: ', className='card-text1', style={'font-weight': 'bold', 'margin-top': '15px'}))
         posTabl.append(html.P(df_pos.iloc[row]['Text'], className='card-text2', style={'margin-top': '5px'}))
         posTabl.append(html.P('Polarität: ', className='card-text1', style={'font-weight': 'bold', 'margin-top': '25px'}))
-        posTabl.append(dbc.Progress(value=df_pos.iloc[row]['Polarität'], color=colorpol, max=1.0))
+        posTabl.append(dbc.Progress(value=df_pos.iloc[row]['Polarität'], color=colorpol, max=1.0, style={'background-color':colorpol}))
         posTabl.append(html.P('Subjektivität: ', className='card-text1', style={'font-weight': 'bold','margin-top': '25px'}))
-        posTabl.append(dbc.Progress(value=df_pos.iloc[row]['Subjektivität'], color=colorsub, max=1.0))
+        posTabl.append(dbc.Progress(value=df_pos.iloc[row]['Subjektivität'], color=colorsub, max=1.0, style={'background-color':colorsub}))
         posTabl.append(html.Hr(style={'margin': '5px 0 15px 0', 'padding':'0'}))
 
     
@@ -151,9 +151,9 @@ def get_sentiment(texts, index):
         neuTabl.append(html.P('Text: ', className='card-text1', style={'font-weight': 'bold', 'margin-top': '15px'}))
         neuTabl.append(html.P(df_neu.iloc[row]['Text'], className='card-text2', style={'margin-top': '5px'}))
         neuTabl.append(html.P('Polarität: ', className='card-text1', style={'font-weight': 'bold', 'margin-top': '25px'}))
-        neuTabl.append(dbc.Progress(value=value, color=colorpol, max=1.0))
+        neuTabl.append(dbc.Progress(value=value, color=colorpol, max=1.0, style={'background-color': colorpol }))
         neuTabl.append(html.P('Subjektivität: ', className='card-text1', style={'font-weight': 'bold','margin-top': '25px'}))
-        neuTabl.append(dbc.Progress(value=df_neu.iloc[row]['Subjektivität'], color=colorsub, max=1.0))
+        neuTabl.append(dbc.Progress(value=df_neu.iloc[row]['Subjektivität'], style={'background-color':colorsub}))
         neuTabl.append(html.Hr(style={'margin': '5px 0 25px 0', 'padding':'0'}))
     
 
@@ -181,9 +181,9 @@ def get_sentiment(texts, index):
         negTabl.append(html.P('Text: ', className='card-text1', style={'font-weight': 'bold', 'margin-top': '15px'}))
         negTabl.append(html.P(df_neg.iloc[row]['Text'], className='card-text2', style={'margin-top': '5px'}))
         negTabl.append(html.P('Polarität: ', className='card-text1', style={'font-weight': 'bold', 'margin-top': '25px'}))
-        negTabl.append(dbc.Progress(value=df_neg.iloc[row]['Polarität'], color=colorpol, max=-1.0))
+        negTabl.append(dbc.Progress(value=df_neg.iloc[row]['Polarität'], color=colorpol, max=-1.0, style={'background-color': colorpol }))
         negTabl.append(html.P('Subjektivität: ', className='card-text1', style={'font-weight': 'bold','margin-top': '25px'}))
-        negTabl.append(dbc.Progress(value=df_neg.iloc[row]['Subjektivität'], color=colorsub, max=1.0))
+        negTabl.append(dbc.Progress(value=df_neg.iloc[row]['Subjektivität'], color=colorsub, max=1.0, style={'background-color': colorsub }))
         negTabl.append(html.Hr(style={'margin': '5px 0 15px 0', 'padding':'0'}))
     
     
