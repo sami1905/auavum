@@ -143,7 +143,7 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                                     html.P('Ausgewähltes Merkmal (Spalte): ' , className='card-text2', style={'font-weight': 'bold'}),
                                     html.P(col, className='card-text2')
                                     ], style={'margin-left':'3px'})
-                        ])
+                        ], style={'text-align' : 'left'})
                     ], style={"width": "max", "height": "max"}, className='deskriptiv-card'),
                     dbc.Card([
                         dbc.CardBody([
