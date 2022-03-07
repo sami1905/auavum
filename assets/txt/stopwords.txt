@@ -593,6 +593,7 @@ x
 y
 z
 z.b
+zb
 zehn
 zehnte
 zehnten

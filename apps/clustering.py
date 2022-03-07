@@ -525,7 +525,7 @@ def get_Dendro(vectors, labels):
 
     # Initialize figure by creating upper dendrogram
   
-    dendro = ff.create_dendrogram(vectors, orientation='bottom', labels=labels, linkagefun=lambda x: sch.linkage(x, "complete", "euclidean"))
+    dendro = ff.create_dendrogram(vectors, orientation='bottom', labels=labels, linkagefun=lambda x: sch.linkage(x, "complete", "cosine"))
     for i in range(len(dendro['data'])):
         dendro['data'][i]['yaxis'] = 'y2'
         
@@ -608,7 +608,7 @@ def get_Dendro(vectors, labels):
     return dendro
 
 def get_Clusters(k, vectors):
-    Hclustering = AgglomerativeClustering(n_clusters=k, affinity='euclidean', linkage='complete')
+    Hclustering = AgglomerativeClustering(n_clusters=k, affinity='cosine', linkage='complete')
     Hclustering.fit(vectors)
     return Hclustering.labels_
 
@@ -679,16 +679,23 @@ def new_bert(sentences):
     for sent in sentences:
         # tokenization
         sent_token = word_tokenize(sent)
+
+        #removing special characters
+        tokens_without_sc = []
+        for token in sent_token:
+            word = ''.join(e for e in token if e.isalnum())
+            if word != '':
+                tokens_without_sc.append(word)
         
         #removing stopwords
-        tokens_without_sw = [word for word in sent_token if not word.lower() in german_stop_words]
-        
-        #stemming
-        stemmed_tokens_without_sw = []
-        for word in tokens_without_sw:
-            stemmed_tokens_without_sw.append(porter.stem(word))
+        tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
 
-        curr_sent = (" ").join(stemmed_tokens_without_sw)
+        #stemming
+        stemmed_tokens_without_sc_and_sw = []
+        for word in tokens_without_sc_an_sw:
+            stemmed_tokens_without_sc_and_sw.append(porter.stem(word))
+
+        curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
         filtered_sentences.append(curr_sent)
     print(filtered_sentences[6])
 
@@ -718,24 +725,31 @@ def plot_2d(vectors, clusterLabels):
 
 def getTopics(sentences, clusterLabels):
     filtered_sentences = []
-    print(sentences[5])
+    print(sentences[6])
     for sent in sentences:
         # tokenization
         sent_token = word_tokenize(sent)
 
-        #removing stopwords
-        tokens_without_sw = [word for word in sent_token if not word in german_stop_words]
+        #removing special characters
+        tokens_without_sc = []
+        for token in sent_token:
+            word = ''.join(e for e in token if e.isalnum())
+            if word != '':
+                tokens_without_sc.append(word)
         
+        #removing stopwords
+        tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
+
         #lemmatization
-        lemma_tokens_without_sw = []
-        for word in tokens_without_sw:
+        lemma_tokens_without_sc_and_sw = []
+        for word in tokens_without_sc_an_sw:
             doc = lemma(word)
             lemma_token = ' '.join([x.lemma_ for x in doc]) 
-            lemma_tokens_without_sw.append(lemma_token)
-        curr_sent = (" ").join(lemma_tokens_without_sw)
+            lemma_tokens_without_sc_and_sw.append(lemma_token)
+        curr_sent = (" ").join(lemma_tokens_without_sc_and_sw)
         filtered_sentences.append(curr_sent)
     
-    print(filtered_sentences[5])
+    print(filtered_sentences[6])
     
     docs_df = pd.DataFrame(filtered_sentences, columns=["Doc"])
     docs_df['Topic'] = clusterLabels
