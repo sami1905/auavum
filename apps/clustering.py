@@ -21,6 +21,31 @@ import plotly.express as px
 from transformers import AutoTokenizer, AutoModel
 tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 token_model = AutoModel.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+from sentence_transformers import SentenceTransformer
+model = SentenceTransformer('distilbert-base-nli-mean-tokens')
+model2 = SentenceTransformer('distiluse-base-multilingual-cased-v1')
+from nltk.corpus import stopwords
+
+#word tokenizer
+from nltk.tokenize import word_tokenize
+
+#lemmatization
+import spacy
+lemma = spacy.load('de_core_news_md')
+#stemmer
+from nltk.stem import PorterStemmer
+porter = PorterStemmer()
+
+#stopwords
+text_file = open('./assets/txt/stopwords.txt', 'r', encoding='utf-8')
+swords = text_file.read()
+text_file.close()
+liste_der_unerwuenschten_woerter = swords.split()
+
+german_stop_words = liste_der_unerwuenschten_woerter #+ stopwords.words('german')
+
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 
@@ -188,7 +213,7 @@ def show_dendro(col, data):
         print("Start 'transformation' after: ")
         finished = time.perf_counter()
         print(f'{round(finished-start, 2) } second(s)')
-        vectors = new_transformation(sentences)
+        vectors = new_bert(sentences)
         print("Beenden 'transformation' after: ")
         finished = time.perf_counter()
         print(f'{round(finished-start, 2) } second(s)')
@@ -330,6 +355,10 @@ def show_clusters(k, data, col, vectors):
         cluster = get_Clusters(k[0], vectors)
         scatter = plot_2d(vectors, cluster)
         df["Cluster"] = cluster+1
+        print(col)
+        print(df[col])
+        top_n_words, topic_sizes = getTopics(df[col].tolist(), df["Cluster"].tolist())
+      
 
         clusters = list(dict.fromkeys(cluster))
         clusters.sort()
@@ -341,6 +370,8 @@ def show_clusters(k, data, col, vectors):
             clu = clu+1
             if clu ==1:
                 is_open = True
+
+            top5topics = top_n_words[clu][:5]
             df_c= df.loc[df['Cluster'] == clu]
             count_values =(len(df_c.columns)*(len(df_c.index)))
             percent_float = (df_c.isnull().sum().sum()/count_values)
@@ -371,6 +402,33 @@ def show_clusters(k, data, col, vectors):
                                 html.P('Anzahl leerer Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
                                 html.P(str(df_c.isnull().sum().sum()) + ' (' + str(percent_int) + '%)', className='card-text2')
                             ], style={'margin-left':'3px'}),
+                            html.Div([
+                                html.P('Top-5-Themen: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                dbc.Row([
+                                    html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),
+                                    html.P(str(top5topics[0][0]) + " (" + str(round(top5topics[0][1], 5)) + ")", className='card-text2')
+                                ], style={'margin-left':'20px'}),
+                                
+                                dbc.Row([
+                                    html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),
+                                    html.P(str(top5topics[1][0]) + " (" + str(round(top5topics[1][1], 5)) + ")", className='card-text2')
+                                ], style={'margin-left':'20px'}),
+                                
+                                dbc.Row([
+                                    html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),
+                                    html.P(str(top5topics[2][0]) + " (" + str(round(top5topics[2][1], 5)) + ")", className='card-text2')
+                                ], style={'margin-left':'20px'}),
+
+                                dbc.Row([
+                                    html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),
+                                    html.P(str(top5topics[3][0]) + " (" + str(round(top5topics[3][1], 5)) + ")", className='card-text2')
+                                ], style={'margin-left':'20px'}),
+
+                                dbc.Row([
+                                    html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),
+                                    html.P(str(top5topics[4][0]) + " (" + str(round(top5topics[4][1], 5)) + ")", className='card-text2')
+                                ], style={'margin-left':'20px'}),
+                            ], style={'margin':'0 0 25px 3px'}),
                             dbc.Button(["Mehr zu Cluster " + str(clu) + "..."], id={'type':'dynamic-more-btn', 'index': int(clu)},
                                 color="secondary",
                                 n_clicks=0,
@@ -400,6 +458,21 @@ def toggle_collapse(n, is_open):
     if n:
         return not is_open
     return is_open
+
+@app.callback([Output({'type':'errorView', 'index':7}, 'style'), Output('clustering-content', 'style')],
+               [Input('main_data_after_preperation', 'data'),
+               Input('listOfFest', 'data'),
+               Input('listOfFrei', 'data')])
+def error2(main_data, d1, d2):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
+    
+    
+    if main_data is None or d1 is None or d2 is None:
+        return style1, style2
+    
+    else:
+        return style2, style1
 
 @app.callback([Output('clusterview', 'children'),
                 Output('clusterview', 'style'), Output('analysis', 'style'),
@@ -539,10 +612,25 @@ def get_Clusters(k, vectors):
     Hclustering.fit(vectors)
     return Hclustering.labels_
 
-def transformation(sentences):
-    print("in old_transformation Funktion")
-    vectorizer.bert(sentences)
-    vectors = vectorizer.vectors
+def sent2vec(sentences):
+    print(sentences[6])
+    filtered_sentences = []
+    for sent in sentences:
+        sent_token = word_tokenize(sent)
+        tokens_without_sw = [word for word in sent_token if not word.lower() in german_stop_words]
+        
+        stemmed_tokens_without_sw = []
+        for word in tokens_without_sw:
+            stemmed_tokens_without_sw.append(porter.stem(word))
+
+        curr_sent = (" ").join(stemmed_tokens_without_sw)
+        filtered_sentences.append(curr_sent)
+    print(filtered_sentences[5])
+    
+    vectorizer.bert(filtered_sentences)
+    vecs = vectorizer.vectors
+    print("Dimensionen: " + str(len(vecs[0])))
+    vectors = vecstoXd(vecs, round(len(vecs)*0.4), 2)
 
     return vectors
 
@@ -553,17 +641,25 @@ def mean_pooling(model_output, attention_mask):
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
-def new_transformation(sentences):
-    #listfosents=[]
-    # for sent in sentences:
-    #     text_tokens = word_tokenize(sent)
-    #     tokens_without_sw = [word for word in text_tokens if not word in STOPWORDS]
+def old_bert(sentences):
+    print(sentences[6])
+    filtered_sentences = []
+    for sent in sentences:
+        sent_token = word_tokenize(sent)
+        tokens_without_sw = [word for word in sent_token if not word.lower() in german_stop_words]
+        
+        stemmed_tokens_without_sw = []
+        for word in tokens_without_sw:
+            stemmed_tokens_without_sw.append(porter.stem(word))
 
-    #     listfosents.append((" ").join(tokens_without_sw))
+        curr_sent = (" ").join(stemmed_tokens_without_sw)
+        filtered_sentences.append(curr_sent)
+    print(filtered_sentences[6])
+
 
 
     # Tokenize sentences
-    encoded_input = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
+    encoded_input = tokenizer(filtered_sentences, padding=True, truncation=True, return_tensors='pt')
 
     # Compute token embeddings
     with torch.no_grad():
@@ -571,17 +667,45 @@ def new_transformation(sentences):
 
     # Perform pooling. In this case, max pooling.
     vecs = mean_pooling(model_output, encoded_input['attention_mask'])
+    print("Dimensionen: " + str(len(vecs[0])))
+
+    vectors = vecstoXd(vecs, round(len(vecs)*0.4), 2)
     
-    print("vecs erstellt")
-    print(vecs.numpy())
-    print(round(len(vecs)*0.4))
+    return vectors
+
+def new_bert(sentences):
+    print(sentences[6])
+    filtered_sentences = []
+    for sent in sentences:
+        # tokenization
+        sent_token = word_tokenize(sent)
+        
+        #removing stopwords
+        tokens_without_sw = [word for word in sent_token if not word.lower() in german_stop_words]
+        
+        #stemming
+        stemmed_tokens_without_sw = []
+        for word in tokens_without_sw:
+            stemmed_tokens_without_sw.append(porter.stem(word))
+
+        curr_sent = (" ").join(stemmed_tokens_without_sw)
+        filtered_sentences.append(curr_sent)
+    print(filtered_sentences[6])
+
+    vecs = model2.encode(filtered_sentences, show_progress_bar=True)
+    print("Dimensionen: " + str(len(vecs[0])))
+    vectors = vecstoXd(vecs, round(len(vecs)*0.4), 2)
+
+    return vectors
+
+def vecstoXd(vecs, nneighbors, x):
     #reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine', min_dist=0.5)
-    reducer = umap.UMAP(random_state=42, n_neighbors=round(len(vecs)*0.4), n_components=2, metric='cosine', min_dist=0.5)
+    reducer = umap.UMAP(random_state=42, n_neighbors=nneighbors, n_components=x, metric='cosine', min_dist=0.5)
+    
     print("Zwischenschritt von vec2d")
-    vec2d= reducer.fit_transform(vecs.numpy())
+    vec2d= reducer.fit_transform(vecs)
     print("vec2d erstellt")
     return vec2d
-
 
 
 def plot_2d(vectors, clusterLabels):    
@@ -591,20 +715,70 @@ def plot_2d(vectors, clusterLabels):
     fig = px.scatter(result, x="x", y="y", color='labels')
 
     return fig
+
+def getTopics(sentences, clusterLabels):
+    filtered_sentences = []
+    print(sentences[5])
+    for sent in sentences:
+        # tokenization
+        sent_token = word_tokenize(sent)
+
+        #removing stopwords
+        tokens_without_sw = [word for word in sent_token if not word in german_stop_words]
+        
+        #lemmatization
+        lemma_tokens_without_sw = []
+        for word in tokens_without_sw:
+            doc = lemma(word)
+            lemma_token = ' '.join([x.lemma_ for x in doc]) 
+            lemma_tokens_without_sw.append(lemma_token)
+        curr_sent = (" ").join(lemma_tokens_without_sw)
+        filtered_sentences.append(curr_sent)
+    
+    print(filtered_sentences[5])
+    
+    docs_df = pd.DataFrame(filtered_sentences, columns=["Doc"])
+    docs_df['Topic'] = clusterLabels
+    
+    docs_df['Doc_ID'] = range(len(docs_df))
+    docs_per_topic = docs_df.groupby(['Topic'], as_index = False).agg({'Doc': ' '.join})
+
+    tf_idf, count = c_tf_idf(docs_per_topic.Doc.values, m=len(filtered_sentences))
+
+    top_n_words = extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n=20)
+    topic_sizes = extract_topic_sizes(docs_df); topic_sizes.head(10)
+    
+    for clu in top_n_words:
+        print(top_n_words[clu][:5])
+
+    return top_n_words, topic_sizes
     
 
-@app.callback([Output({'type':'errorView', 'index':7}, 'style'), Output('clustering-content', 'style')],
-               [Input('main_data_after_preperation', 'data'),
-               Input('listOfFest', 'data'),
-               Input('listOfFrei', 'data')])
-def error2(main_data, d1, d2):
-    style1 = {'display':'block'}
-    style2 = {'display':'none'}
-    
-    
-    if main_data is None or d1 is None or d2 is None:
-        return style1, style2
-    
-    else:
-        return style2, style1
+def c_tf_idf(documents, m, ngram_range=(1, 1)):
+    count = CountVectorizer(ngram_range=ngram_range, stop_words=german_stop_words).fit(documents)
+    t = count.transform(documents).toarray()
+    w = t.sum(axis=1)
+    tf = np.divide(t.T, w)
+    sum_t = t.sum(axis=0)
+    idf = np.log(np.divide(m, sum_t)).reshape(-1, 1)
+    tf_idf = np.multiply(tf, idf)
 
+    return tf_idf, count
+
+
+def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n=20):
+    words = count.get_feature_names()
+    labels = list(docs_per_topic.Topic)
+    tf_idf_transposed = tf_idf.T
+    indices = tf_idf_transposed.argsort()[:, -n:]
+    top_n_words = {label: [(words[j], tf_idf_transposed[i][j]) for j in indices[i]][::-1] for i, label in enumerate(labels)}
+    return top_n_words
+
+def extract_topic_sizes(df):
+    topic_sizes = (df.groupby(['Topic'])
+                     .Doc
+                     .count()
+                     .reset_index()
+                     .rename({"Topic": "Topic", "Doc": "Size"}, axis='columns')
+                     .sort_values("Size", ascending=False))
+    return topic_sizes
