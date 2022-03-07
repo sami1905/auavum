@@ -616,16 +616,27 @@ def sent2vec(sentences):
     print(sentences[6])
     filtered_sentences = []
     for sent in sentences:
+        # tokenization
         sent_token = word_tokenize(sent)
-        tokens_without_sw = [word for word in sent_token if not word.lower() in german_stop_words]
-        
-        stemmed_tokens_without_sw = []
-        for word in tokens_without_sw:
-            stemmed_tokens_without_sw.append(porter.stem(word))
 
-        curr_sent = (" ").join(stemmed_tokens_without_sw)
+        #removing special characters
+        tokens_without_sc = []
+        for token in sent_token:
+            word = ''.join(e for e in token if e.isalnum())
+            if word != '':
+                tokens_without_sc.append(word)
+        
+        #removing stopwords
+        tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
+
+        #stemming
+        stemmed_tokens_without_sc_and_sw = []
+        for word in tokens_without_sc_an_sw:
+            stemmed_tokens_without_sc_and_sw.append(porter.stem(word))
+
+        curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
         filtered_sentences.append(curr_sent)
-    print(filtered_sentences[5])
+    print(filtered_sentences[6])
     
     vectorizer.bert(filtered_sentences)
     vecs = vectorizer.vectors
@@ -645,14 +656,25 @@ def old_bert(sentences):
     print(sentences[6])
     filtered_sentences = []
     for sent in sentences:
+        # tokenization
         sent_token = word_tokenize(sent)
-        tokens_without_sw = [word for word in sent_token if not word.lower() in german_stop_words]
-        
-        stemmed_tokens_without_sw = []
-        for word in tokens_without_sw:
-            stemmed_tokens_without_sw.append(porter.stem(word))
 
-        curr_sent = (" ").join(stemmed_tokens_without_sw)
+        #removing special characters
+        tokens_without_sc = []
+        for token in sent_token:
+            word = ''.join(e for e in token if e.isalnum())
+            if word != '':
+                tokens_without_sc.append(word)
+        
+        #removing stopwords
+        tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
+
+        #stemming
+        stemmed_tokens_without_sc_and_sw = []
+        for word in tokens_without_sc_an_sw:
+            stemmed_tokens_without_sc_and_sw.append(porter.stem(word))
+
+        curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
         filtered_sentences.append(curr_sent)
     print(filtered_sentences[6])
 
