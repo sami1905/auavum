@@ -6,6 +6,20 @@ from app import app
 from textblob_de import TextBlobDE as TextBlob
 import pandas as pd
 import plotly.express as px
+#word tokenizer
+from nltk.tokenize import word_tokenize
+
+#lemmatization
+import spacy
+lemma = spacy.load('de_core_news_md')
+
+#stopwords
+text_file = open('./assets/txt/stopwords_sentiment.txt', 'r', encoding='utf-8')
+swords = text_file.read()
+text_file.close()
+liste_der_unerwuenschten_woerter = swords.split()
+
+german_stop_words = liste_der_unerwuenschten_woerter #+ stopwords.words('german')
 
 def layout(text, index):
     
@@ -48,12 +62,39 @@ def layout(text, index):
                 State('sentiment-index', 'data')]
 )
 def get_sentiment(polvalues, subvalues, texts, index):
+    filtered_sentences = []
+    for sent in texts:
+        # tokenization
+        sent_token = word_tokenize(sent)
+
+        #removing special characters
+        tokens_without_sc = []
+        for token in sent_token:
+            word = ''.join(e for e in token if e.isalnum())
+            if word != '':
+                tokens_without_sc.append(word)
+        
+        #removing stopwords
+        #tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
+
+        #lemmatization
+        lemma_tokens_without_sc_and_sw = []
+        for word in tokens_without_sc:
+            doc = lemma(word)
+            lemma_token = ' '.join([x.lemma_ for x in doc]) 
+            lemma_tokens_without_sc_and_sw.append(lemma_token)
+        
+        
+        curr_sent = (" ").join(lemma_tokens_without_sc_and_sw)
+        filtered_sentences.append(curr_sent)
+    
+    
     # sentiment
     list_polarity = []
     list_subjektivity = []
     list_countCharts = []
     
-    for text in texts:
+    for text in filtered_sentences:
         blob = TextBlob(text)
         list_polarity.append(blob.sentiment.polarity)
         list_subjektivity.append(blob.sentiment.subjectivity)
@@ -81,10 +122,10 @@ def get_sentiment(polvalues, subvalues, texts, index):
     print(df)
     df=df.reset_index()
     for row in df.index:
-        if df.iloc[row]['Polarität'] >= 0.25:
+        if df.iloc[row]['Polarität'] > 0:
             pos.append(row)
 
-        elif df.iloc[row]['Polarität'] <= -0.25:
+        elif df.iloc[row]['Polarität'] < 0:
             neg.append(row)
         else:
             neu.append(row)

@@ -165,7 +165,7 @@ def update_text_dropdown(value, data):
     
             for text in texts:
                 summarizeTheText = summarizeTheText + text + " "
-        
+                        
             return summary.layout(summarizeTheText)
         else:
             return None

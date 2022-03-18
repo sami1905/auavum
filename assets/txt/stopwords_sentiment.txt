@@ -47,9 +47,6 @@ beim
 beispiel
 bekannt
 bereits
-besonders
-besser
-besten
 bin
 bis
 bisher
@@ -61,8 +58,6 @@ d.h
 da
 dabei
 dadurch
-dafür
-dagegen
 daher
 dahin
 dahinter
@@ -70,7 +65,6 @@ damals
 damit
 danach
 daneben
-dank
 dann
 daran
 darauf
@@ -189,7 +183,6 @@ ersten
 erster
 erstes
 es
-etc
 etwa
 etwas
 euch
@@ -249,10 +242,6 @@ große
 großen
 großer
 großes
-gut
-gute
-guter
-gutes
 h
 hab
 habe
@@ -319,7 +308,6 @@ k
 kam
 kann
 kannst
-kaum
 kein
 keine
 keinem
@@ -339,18 +327,11 @@ können
 könnt
 könnte
 l
-lang
-lange
-leicht
-leide
-lieber
 los
 m
 machen
 macht
 machte
-mag
-magst
 mahn
 mal
 man
@@ -360,7 +341,6 @@ manchen
 mancher
 manches
 mann
-mehr
 mein
 meine
 meinem
@@ -372,9 +352,6 @@ menschen
 mich
 mir
 mit
-mittel
-mochte
-mochten
 morgen
 muss
 musst
@@ -382,10 +359,7 @@ musste
 mussten
 muß
 mußt
-möchte
-mögen
 möglich
-mögt
 müssen
 müsst
 müßt
@@ -396,8 +370,6 @@ nachdem
 nahm
 natürlich
 neben
-nehmen
-nein
 neue
 neuen
 neun
@@ -405,15 +377,8 @@ neunte
 neunten
 neunter
 neuntes
-nicht
-nichts
-nie
-niemand
-niemandem
-niemanden
 noch
 nun
-nur
 o
 ob
 oben
@@ -421,7 +386,6 @@ oder
 offen
 oft
 ohne
-ordnung
 p
 q
 r
@@ -430,7 +394,6 @@ rechte
 rechten
 rechter
 rechtes
-richtig
 rund
 s
 sa
@@ -439,7 +402,6 @@ sagt
 sagte
 sah
 satt
-schlecht
 schluss
 schon
 sechs
@@ -481,13 +443,10 @@ sollst
 sollt
 sollte
 sollten
-sondern
 sonst
 soweit
 sowie
-später
 startseite
-statt
 steht
 suche
 t
@@ -514,7 +473,6 @@ unserer
 unses
 unter
 v
-vergangenen
 viel
 viele
 vielem
@@ -528,7 +486,6 @@ viertes
 vom
 von
 vor
-vorallem
 w
 wahr
 wann
@@ -553,10 +510,6 @@ welcher
 welches
 wem
 wen
-wenig
-wenige
-weniger
-weniges
 wenigstens
 wenn
 wer

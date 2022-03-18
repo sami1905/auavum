@@ -18,7 +18,9 @@ from apps import summary, profiler, interactive_charts, chart_dashboard, sentime
 
 import functions.dataProfiling as dProfile
 
-def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
+def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col, listOfTopics):
+    listOfClusterTopic =  pd.read_json(listOfTopics, orient='split')
+
     df= data.loc[data['Cluster'] == cluster_nr]
     df = df.set_index(df.columns[0])
     charts = []
@@ -164,10 +166,69 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col):
                 dbc.Col(
                     dbc.Card([
                         dbc.CardBody([
-                            html.H4("Word-Cloud:", style={'text-align': 'left'}),
+                            html.H4("Topic Modeling:", style={'text-align': 'left'}),
                             html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
                             
                             dcc.Graph(id="cloud", style={'height': '470px', "margin":"0", "padding":"0"}, figure = fig3),
+                            dbc.Row([
+                                            html.P('Top-10-Themen: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                            dbc.Col(html.Div([
+                                                dbc.Row([
+                                                    html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[0]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[0], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[1]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[1], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[2]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[2], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[3]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[3], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[4]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[4], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                            ]),width=5),
+                                            dbc.Col(width=1),
+                                            dbc.Col(html.Div([
+                                                dbc.Row([
+                                                    html.P('6: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[5]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[5], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('7: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[6]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[6], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('8: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[7]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[7], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('9: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[8]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[8], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('10: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(listOfClusterTopic.index.values.tolist()[9]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[9], 4)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+
+                                            ]),width=5),
+                                        ])
                         ])
                     ], className='deskriptiv-card'), width = 4)
             ]),

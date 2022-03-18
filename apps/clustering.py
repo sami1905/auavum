@@ -1,5 +1,6 @@
 
 import time
+import random
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_bootstrap_components as dbc
 from dash import dcc
@@ -22,8 +23,23 @@ from transformers import AutoTokenizer, AutoModel
 tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 token_model = AutoModel.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 from sentence_transformers import SentenceTransformer
-model = SentenceTransformer('distilbert-base-nli-mean-tokens')
-model2 = SentenceTransformer('distiluse-base-multilingual-cased-v1')
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
+from plotly.graph_objs import *
+#favorit
+#model1 = SentenceTransformer('distilbert-base-nli-mean-tokens') #erst complete
+model2 = SentenceTransformer('distiluse-base-multilingual-cased-v1') #erst complete
+
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+
+#offen
+
+
+# ausgeschieden
+#model3 = SentenceTransformer('all-mpnet-base-v2')
+#model4 = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
+
 from nltk.corpus import stopwords
 
 #word tokenizer
@@ -48,7 +64,8 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-
+#Generate 10 random numbers between 10 and 30
+randomlist = random.sample(range(0, 878), 10)
 
 layout=dbc.Container([
     dcc.Store(id='vectors', storage_type='memory'),
@@ -123,8 +140,8 @@ layout=dbc.Container([
                                 html.P('Wähle die Cluster-Anzahl:' , className='card-text2', style={"font-weight": "bold", "margin":"20px 0"}),
                                 dcc.RangeSlider(
                                     id='count_clusters',
-                                    min=2, max=18, step=1,
-                                    marks={2: '2', 3:' ', 4:'4', 5:' ', 6:'6', 7:' ', 8:'8', 9:' ', 10: '10', 11:' ', 12: '12', 13:' ', 14:'14', 15: ' ', 16:'16', 17: ' ', 18: '18'},
+                                    min=2, max=24, step=1,
+                                    marks={2: '2', 3:' ', 4:'4', 5:' ', 6:'6', 7:' ', 8:'8', 9:' ', 10: '10', 11:' ', 12: '12', 13:' ', 14:'14', 15: ' ', 16:'16', 17: ' ', 18: '18', 19: ' ', 20:'20', 21: ' ', 22:'22', 23: ' ', 24: '24'},
                                     value=[1],
                                 ),
                                 html.Div(id='show-cluster-plot', children=None, style={"margin": "20px 0", "width":"650px", "text-align":"center"}),
@@ -206,9 +223,7 @@ def show_dendro(col, data):
         df = pd.read_json(data, orient='split')
         df = df.set_index(df.columns[0])
         df = df.dropna(subset=[col])
-        sentences = []
-        for val in df[col]:
-            sentences.append(val)
+        sentences = df[col].tolist()
             
         print("Start 'transformation' after: ")
         finished = time.perf_counter()
@@ -340,7 +355,8 @@ def update_drops(data, clusters, value):
 
 @app.callback([Output('show-clusters', 'children'),
                 Output('clusters', 'data'),
-                Output('show-cluster-plot', 'children')],
+                Output('show-cluster-plot', 'children'),
+                Output('listOfTopics', 'data'),],
             [Input('count_clusters', 'value')],
             [State('main_data_after_preperation', 'data'), State('choosen-col', 'value'), State('vectors', 'data')])
 def show_clusters(k, data, col, vectors):
@@ -357,7 +373,8 @@ def show_clusters(k, data, col, vectors):
         df["Cluster"] = cluster+1
         print(col)
         print(df[col])
-        top_n_words, topic_sizes = getTopics(df[col].tolist(), df["Cluster"].tolist())
+        tfidf, listOfTopics  = getTopics(df, col)
+        print(tfidf[0])
       
 
         clusters = list(dict.fromkeys(cluster))
@@ -368,10 +385,12 @@ def show_clusters(k, data, col, vectors):
         for clu in clusters:
             is_open = False
             clu = clu+1
-            if clu ==1:
+            if clu == 1:
                 is_open = True
 
-            top5topics = top_n_words[clu][:5]
+            print(clu)
+            top5topics = tfidf[clu-1][:10]
+            print(top5topics)
             df_c= df.loc[df['Cluster'] == clu]
             count_values =(len(df_c.columns)*(len(df_c.index)))
             percent_float = (df_c.isnull().sum().sum()/count_values)
@@ -387,47 +406,86 @@ def show_clusters(k, data, col, vectors):
                             html.H2('Informationen'),
                             html.Hr(style={'margin': '0 0 5px 0', 'padding':'0'}),
                             dbc.Row([
-                                html.P('Anzahl der Zeilen gesamt: ', className='card-text2', style={'font-weight': 'bold'}),
-                                html.P(str(len(df_c.index)), className='card-text2'),
-                            ], style={'margin-left':'3px'}),
-                            dbc.Row([
-                                html.P('Anzahl der Spalten gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                html.P(str(len(df_c.columns)), className='card-text2'),
-                            ], style={'margin-left':'3px'}),
-                            dbc.Row([
-                                html.P('Anzahl Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                html.P(str(count_values), className='card-text2')
-                            ], style={'margin-left':'3px'}),
-                            dbc.Row([
-                                html.P('Anzahl leerer Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                html.P(str(df_c.isnull().sum().sum()) + ' (' + str(percent_int) + '%)', className='card-text2')
-                            ], style={'margin-left':'3px'}),
-                            html.Div([
-                                html.P('Top-5-Themen: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                dbc.Row([
-                                    html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),
-                                    html.P(str(top5topics[0][0]) + " (" + str(round(top5topics[0][1], 5)) + ")", className='card-text2')
-                                ], style={'margin-left':'20px'}),
-                                
-                                dbc.Row([
-                                    html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),
-                                    html.P(str(top5topics[1][0]) + " (" + str(round(top5topics[1][1], 5)) + ")", className='card-text2')
-                                ], style={'margin-left':'20px'}),
-                                
-                                dbc.Row([
-                                    html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),
-                                    html.P(str(top5topics[2][0]) + " (" + str(round(top5topics[2][1], 5)) + ")", className='card-text2')
-                                ], style={'margin-left':'20px'}),
+                                dbc.Col(html.Div([
+                                    dbc.Row([
+                                        html.P('Anzahl der Zeilen gesamt: ', className='card-text2', style={'font-weight': 'bold'}),
+                                        html.P(str(len(df_c.index)), className='card-text2'),
+                                    ], style={'margin-left':'3px'}),
+                                    dbc.Row([
+                                        html.P('Anzahl der Spalten gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                        html.P(str(len(df_c.columns)), className='card-text2'),
+                                    ], style={'margin-left':'3px'}),
+                                    dbc.Row([
+                                        html.P('Anzahl Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                        html.P(str(count_values), className='card-text2')
+                                    ], style={'margin-left':'3px'}),
+                                    dbc.Row([
+                                        html.P('Anzahl leerer Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                        html.P(str(df_c.isnull().sum().sum()) + ' (' + str(percent_int) + '%)', className='card-text2')
+                                    ], style={'margin-left':'3px'})
 
-                                dbc.Row([
-                                    html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),
-                                    html.P(str(top5topics[3][0]) + " (" + str(round(top5topics[3][1], 5)) + ")", className='card-text2')
-                                ], style={'margin-left':'20px'}),
+                                    ]),width=4),
+                                dbc.Col(html.Div([
+                                        html.P('Top-10-Themen: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                        dbc.Row([
+                                            dbc.Col(html.Div([
+                                                dbc.Row([
+                                                    html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[0]) + " (" + str(round(top5topics['tfidf'].tolist()[0], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[1]) + " (" + str(round(top5topics['tfidf'].tolist()[1], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[2]) + " (" + str(round(top5topics['tfidf'].tolist()[2], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
 
-                                dbc.Row([
-                                    html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),
-                                    html.P(str(top5topics[4][0]) + " (" + str(round(top5topics[4][1], 5)) + ")", className='card-text2')
-                                ], style={'margin-left':'20px'}),
+                                                dbc.Row([
+                                                    html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[3]) + " (" + str(round(top5topics['tfidf'].tolist()[3], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[4]) + " (" + str(round(top5topics['tfidf'].tolist()[4], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                            ]),width=4),
+                                            dbc.Col(html.Div([
+                                                dbc.Row([
+                                                    html.P('6: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[5]) + " (" + str(round(top5topics['tfidf'].tolist()[5], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('7: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[6]) + " (" + str(round(top5topics['tfidf'].tolist()[6], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+                                                
+                                                dbc.Row([
+                                                    html.P('8: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[7]) + " (" + str(round(top5topics['tfidf'].tolist()[7], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('9: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[8]) + " (" + str(round(top5topics['tfidf'].tolist()[8], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+                                                dbc.Row([
+                                                    html.P('10: ', className='card-text2', style={'font-weight': 'bold'}),
+                                                    html.P(str(top5topics.index.values.tolist()[9]) + " (" + str(round(top5topics['tfidf'].tolist()[9], 5)) + ")", className='card-text2')
+                                                ], style={'margin-left':'20px'}),
+
+
+                                            ]),width=8),
+                                        ])
+
+                                    ]), width=8)
                             ], style={'margin':'0 0 25px 3px'}),
                             dbc.Button(["Mehr zu Cluster " + str(clu) + "..."], id={'type':'dynamic-more-btn', 'index': int(clu)},
                                 color="secondary",
@@ -444,9 +502,9 @@ def show_clusters(k, data, col, vectors):
             children.append(new_collapse)
         
         
-        return children, df["Cluster"], dcc.Graph(figure=scatter)
+        return children, df["Cluster"], dcc.Graph(figure=scatter), listOfTopics
     else:
-        return None, None, None
+        return None, None, None, None
 
    
 @app.callback(
@@ -482,10 +540,11 @@ def error2(main_data, d1, d2):
                 Input({"type":"dynamic-back-btn", "index": ALL}, 'n_clicks')],
             [State('listOfFrei', 'data'),
             State('listOfFest', 'data'),
+            State('listOfTopics', 'data'),
             State('main_data_after_preperation', 'data'),
             State('clusters', 'data'),
             State('choosen-col', 'value')])
-def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, data, clusters, col):
+def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, listOfTopics, data, clusters, col):
     view=[]
     style1 = {'display':'block'}
     style2 = {'display':'none'}
@@ -502,7 +561,7 @@ def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, data, clusters
             for n, i in enumerate(clicks):
                 if i != 0:
                     clicks[n] = 0
-                    view = cView.show_cluster(cluster_nr, df_cluster, listOfFrei, listOfFest, col)
+                    view = cView.show_cluster(cluster_nr, df_cluster, listOfFrei, listOfFest, col, listOfTopics[cluster_nr-1])
 
         if view != []:
             return view, style1, style2, clicks, back_clicks 
@@ -522,94 +581,99 @@ def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, data, clusters
 
 
 def get_Dendro(vectors, labels):
+    
 
-    # Initialize figure by creating upper dendrogram
+    #dendro1 = sch.dendrogram(sch.linkage(vectors, method='complete'), color_threshold=0.0, above_threshold_color='black')
+    
+    # plt.savefig('D:\Benutzer\Eigene Dateien\SMT\Thesis\Experimente\Clustering\Curr_Model2_Complete')
+    #  # Initialize figure by creating upper dendrogram
   
-    dendro = ff.create_dendrogram(vectors, orientation='bottom', labels=labels, linkagefun=lambda x: sch.linkage(x, "complete", "cosine"))
-    for i in range(len(dendro['data'])):
-        dendro['data'][i]['yaxis'] = 'y2'
+    dendro = ff.create_dendrogram(vectors, orientation='bottom', labels=labels, linkagefun=lambda x: sch.linkage(vectors, "average", "cosine"))
+    # for i in range(len(dendro['data'])):
+    #     dendro['data'][i]['yaxis'] = 'y2'
         
-    # Create Side Dendrogram
-    dendro_side = ff.create_dendrogram(vectors, orientation='right')
-    for i in range(len(dendro_side['data'])):
-        dendro_side['data'][i]['xaxis'] = 'x2'
+    # # Create Side Dendrogram
+    # dendro_side = ff.create_dendrogram(vectors, orientation='right')
+    # for i in range(len(dendro_side['data'])):
+    #     dendro_side['data'][i]['xaxis'] = 'x2'
             
-    # Add Side Dendrogram Data to Figure
-    for data in dendro_side['data']:
-        dendro.add_trace(data)
+    # # Add Side Dendrogram Data to Figure
+    # for data in dendro_side['data']:
+    #     dendro.add_trace(data)
         
-    # Add Side Dendrogram Data to Figure
-    for data in dendro_side['data']:
-        dendro.add_trace(data)
+    # # Add Side Dendrogram Data to Figure
+    # for data in dendro_side['data']:
+    #     dendro.add_trace(data)
         
-    # Create Heatmap
-    dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
-    dendro_leaves = list(map(int, dendro_leaves))
+    # # Create Heatmap
+    # dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
+    # dendro_leaves = list(map(int, dendro_leaves))
 
-    data_dist = pdist(vectors)
-    heat_data = squareform(data_dist)
-    heat_data = heat_data[dendro_leaves,:]
-    heat_data = heat_data[:,dendro_leaves]
+    # data_dist = pdist(vectors)
+    # heat_data = squareform(data_dist)
+    # heat_data = heat_data[dendro_leaves,:]
+    # heat_data = heat_data[:,dendro_leaves]
 
-    heatmap = [
-        go.Heatmap(
-            x = dendro_leaves,
-            y = dendro_leaves,
-            z = heat_data,
-            colorscale = 'Blues'
-        )]
+    # heatmap = [
+    #     go.Heatmap(
+    #         x = dendro_leaves,
+    #         y = dendro_leaves,
+    #         z = heat_data,
+    #         colorscale = 'Blues'
+    #     )]
         
-    heatmap[0]['x'] = dendro['layout']['xaxis']['tickvals']
-    heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
+    # heatmap[0]['x'] = dendro['layout']['xaxis']['tickvals']
+    # heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
 
-    # Add Heatmap Data to Figure
-    for data in heatmap:
-        dendro.add_trace(data)
+    # # Add Heatmap Data to Figure
+    # for data in heatmap:
+    #     dendro.add_trace(data)
 
-    # Edit Layout
-    dendro.update_layout({'width':1000, 'height':1000,
-                            'showlegend':False, 'hovermode': 'closest',
-                            })
+    # # Edit Layout
+    # dendro.update_layout({'width':1000, 'height':1000,
+    #                         'showlegend':False, 'hovermode': 'closest',
+    #                         })
 
-    # Edit xaxis
-    dendro.update_layout(xaxis={'domain': [.15, 1],
-                                        'mirror': False,
-                                        'showgrid': False,
-                                        'showline': False,
-                                        'zeroline': False,
-                                        'ticks':""})
-    # Edit xaxis2
-    dendro.update_layout(xaxis2={'domain': [0, .15],
-                                        'mirror': False,
-                                        'showgrid': False,
-                                        'showline': False,
-                                        'zeroline': False,
-                                        'showticklabels': False,
-                                        'ticks':""})
+    # # Edit xaxis
+    # dendro.update_layout(xaxis={'domain': [.15, 1],
+    #                                     'mirror': False,
+    #                                     'showgrid': False,
+    #                                     'showline': False,
+    #                                     'zeroline': False,
+    #                                     'ticks':""})
+    # # Edit xaxis2
+    # dendro.update_layout(xaxis2={'domain': [0, .15],
+    #                                     'mirror': False,
+    #                                     'showgrid': False,
+    #                                     'showline': False,
+    #                                     'zeroline': False,
+    #                                     'showticklabels': False,
+    #                                     'ticks':""})
 
-    # Edit yaxis
-    dendro.update_layout(yaxis={'domain': [0, .85],
-                                        'mirror': False,
-                                        'showgrid': False,
-                                        'showline': False,
-                                        'zeroline': False,
-                                        'showticklabels': False,
-                                        'ticks': ""
-                                })
-    # Edit yaxis2
-    dendro.update_layout(yaxis2={'domain':[.825, .975],
-                                        'mirror': False,
-                                        'showgrid': False,
-                                        'showline': False,
-                                        'zeroline': False,
-                                        'showticklabels': False,
-                                        'ticks':""})   
+    # # Edit yaxis
+    # dendro.update_layout(yaxis={'domain': [0, .85],
+    #                                     'mirror': False,
+    #                                     'showgrid': False,
+    #                                     'showline': False,
+    #                                     'zeroline': False,
+    #                                     'showticklabels': False,
+    #                                     'ticks': ""
+    #                             })
+    # # Edit yaxis2
+    # dendro.update_layout(yaxis2={'domain':[.825, .975],
+    #                                     'mirror': False,
+    #                                     'showgrid': False,
+    #                                     'showline': False,
+    #                                     'zeroline': False,
+    #                                     'showticklabels': False,
+    #                                     'ticks':""})   
 
     return dendro
 
 def get_Clusters(k, vectors):
-    Hclustering = AgglomerativeClustering(n_clusters=k, affinity='cosine', linkage='complete')
+    Hclustering = AgglomerativeClustering(n_clusters=k, affinity='cosine', linkage='average')
     Hclustering.fit(vectors)
+    
     return Hclustering.labels_
 
 def sent2vec(sentences):
@@ -696,8 +760,8 @@ def old_bert(sentences):
     return vectors
 
 def new_bert(sentences):
-    print(sentences[6])
     filtered_sentences = []
+    
     for sent in sentences:
         # tokenization
         sent_token = word_tokenize(sent)
@@ -708,10 +772,10 @@ def new_bert(sentences):
             word = ''.join(e for e in token if e.isalnum())
             if word != '':
                 tokens_without_sc.append(word)
-        
+  
         #removing stopwords
         tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
-
+            
         #stemming
         stemmed_tokens_without_sc_and_sw = []
         for word in tokens_without_sc_an_sw:
@@ -719,102 +783,103 @@ def new_bert(sentences):
 
         curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
         filtered_sentences.append(curr_sent)
-    print(filtered_sentences[6])
 
     vecs = model2.encode(filtered_sentences, show_progress_bar=True)
-    print("Dimensionen: " + str(len(vecs[0])))
-    vectors = vecstoXd(vecs, round(len(vecs)*0.4), 2)
-
+    vectors = vecstoXd(vecs, 20, 2)
+    
     return vectors
 
 def vecstoXd(vecs, nneighbors, x):
     #reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine', min_dist=0.5)
-    reducer = umap.UMAP(random_state=42, n_neighbors=nneighbors, n_components=x, metric='cosine', min_dist=0.5)
-    
-    print("Zwischenschritt von vec2d")
+    reducer = umap.UMAP(random_state=42, n_neighbors=nneighbors, n_components=x, metric='cosine', min_dist=0.8)
     vec2d= reducer.fit_transform(vecs)
-    print("vec2d erstellt")
+        
     return vec2d
 
-
-def plot_2d(vectors, clusterLabels):    
+def plot_2d(vectors, clusterLabels):
     result = pd.DataFrame(vectors, columns=['x','y'])
-    result['labels'] = clusterLabels+1
+    result['Cluster'] = clusterLabels+1
+    result["Cluster"] = result["Cluster"].astype(str)
    
-    fig = px.scatter(result, x="x", y="y", color='labels')
+    fig = px.scatter(result, x="x", y="y", color='Cluster', symbol="Cluster", color_continuous_scale=["red", "orange", "yellowgreen", "green", "olive", "blue", "navy", "grey"])
+
+    #fig.layout.plot_bgcolor = 'rgba(0,0,0,0)'
+    #fig.layout.paper_bgcolor = 'rgba(0,0,0,0)'
+
 
     return fig
 
-def getTopics(sentences, clusterLabels):
-    filtered_sentences = []
-    print(sentences[6])
-    for sent in sentences:
+def getTopics(df, col):
+    print("start topic")
+    size_cluster = len(df['Cluster'].value_counts())
+    
+    raw_docs = []
+    
+    for clu in range(1, size_cluster+1):
+        
+        cluster = df[df['Cluster'] == clu]
+        d = cluster[col].tolist()
+        doc=''
+        for s in d:
+            doc = doc + ' ' + s
+        raw_docs.append(doc)
+       
+    docs=[]
+    
+    for sent in raw_docs:
+        
         # tokenization
         sent_token = word_tokenize(sent)
 
         #removing special characters
         tokens_without_sc = []
         for token in sent_token:
-            word = ''.join(e for e in token if e.isalnum())
-            if word != '':
-                tokens_without_sc.append(word)
-        
+            w = ''.join(e for e in token if e.isalnum())
+            if w != '':
+                tokens_without_sc.append(w)
+       
         #removing stopwords
         tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
-
         #lemmatization
         lemma_tokens_without_sc_and_sw = []
-        for word in tokens_without_sc_an_sw:
-            doc = lemma(word)
+        for w in tokens_without_sc_an_sw:
+            doc = lemma(w)
             lemma_token = ' '.join([x.lemma_ for x in doc]) 
             lemma_tokens_without_sc_and_sw.append(lemma_token)
+        
         curr_sent = (" ").join(lemma_tokens_without_sc_and_sw)
-        filtered_sentences.append(curr_sent)
+        docs.append(curr_sent)
+    cv=CountVectorizer()
+    word_count_vector=cv.fit_transform(docs)
     
-    print(filtered_sentences[6])
+    tfidf_transformer=TfidfTransformer(smooth_idf=True,use_idf=True) 
+    tfidf_transformer.fit(word_count_vector)
     
-    docs_df = pd.DataFrame(filtered_sentences, columns=["Doc"])
-    docs_df['Topic'] = clusterLabels
+    # print idf values 
+    df_idf = pd.DataFrame(tfidf_transformer.idf_, index=cv.get_feature_names(),columns=["idf_weights"]) 
+    # sort ascending 
+    df_idf.sort_values(by=['idf_weights'])
     
-    docs_df['Doc_ID'] = range(len(docs_df))
-    docs_per_topic = docs_df.groupby(['Topic'], as_index = False).agg({'Doc': ' '.join})
-
-    tf_idf, count = c_tf_idf(docs_per_topic.Doc.values, m=len(filtered_sentences))
-
-    top_n_words = extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n=20)
-    topic_sizes = extract_topic_sizes(docs_df); topic_sizes.head(10)
     
-    for clu in top_n_words:
-        print(top_n_words[clu][:5])
-
-    return top_n_words, topic_sizes
+    # count matrix 
+    count_vector=cv.transform(docs) 
+    # tf-idf scores 
+    tf_idf_vector=tfidf_transformer.transform(count_vector)
     
+    feature_names = cv.get_feature_names() 
+    results = []
+    #get tfidf vector for first document 
+    for fe in tf_idf_vector:
+        first_document_vector=fe 
+        df = pd.DataFrame(first_document_vector.T.todense(), index=feature_names, columns=["tfidf"])
+        
+        results.append(df.sort_values(by=["tfidf"],ascending=False))
+    #print the scores 
+    print("finished topic")
 
-def c_tf_idf(documents, m, ngram_range=(1, 1)):
-    count = CountVectorizer(ngram_range=ngram_range, stop_words=german_stop_words).fit(documents)
-    t = count.transform(documents).toarray()
-    w = t.sum(axis=1)
-    tf = np.divide(t.T, w)
-    sum_t = t.sum(axis=0)
-    idf = np.log(np.divide(m, sum_t)).reshape(-1, 1)
-    tf_idf = np.multiply(tf, idf)
+    listOfTopics = []
+    for top in results:
+        listOfTopics.append(top[:10].to_json(date_format='iso', orient='split'))
+        
+    return results, listOfTopics
 
-    return tf_idf, count
-
-
-def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n=20):
-    words = count.get_feature_names()
-    labels = list(docs_per_topic.Topic)
-    tf_idf_transposed = tf_idf.T
-    indices = tf_idf_transposed.argsort()[:, -n:]
-    top_n_words = {label: [(words[j], tf_idf_transposed[i][j]) for j in indices[i]][::-1] for i, label in enumerate(labels)}
-    return top_n_words
-
-def extract_topic_sizes(df):
-    topic_sizes = (df.groupby(['Topic'])
-                     .Doc
-                     .count()
-                     .reset_index()
-                     .rename({"Topic": "Topic", "Doc": "Size"}, axis='columns')
-                     .sort_values("Size", ascending=False))
-    return topic_sizes

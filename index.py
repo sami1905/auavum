@@ -16,6 +16,7 @@ app.layout = dbc.Container([
     dcc.Store(id='main_data_after_preperation', storage_type='session'),
     dcc.Store(id='listOfFrei', storage_type='session'),
     dcc.Store(id='listOfFest', storage_type='session'),
+    dcc.Store(id='listOfTopics', storage_type='session'),
     html.Div(id='page-content', children=[], className='page-content'),
     html.Div(id='max-screen', 
             children=[html.H1('Fenstergröße anpassen!', style={'font-size':'100px', 'margin':'40px'}),
