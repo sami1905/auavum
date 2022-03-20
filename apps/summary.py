@@ -3,8 +3,9 @@ import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 from app import app
-
 from summarizer.sbert import SBertSummarizer
+
+
 summary_model  =  SBertSummarizer ('distiluse-base-multilingual-cased-v1') 
 
 def layout(text):

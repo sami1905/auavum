@@ -78,14 +78,14 @@ def get_sentiment(polvalues, subvalues, texts, index):
         #tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
 
         #lemmatization
-        lemma_tokens_without_sc_and_sw = []
-        for word in tokens_without_sc:
-            doc = lemma(word)
-            lemma_token = ' '.join([x.lemma_ for x in doc]) 
-            lemma_tokens_without_sc_and_sw.append(lemma_token)
+        #lemma_tokens_without_sc_and_sw = []
+        #for word in tokens_without_sc:
+        #    doc = lemma(word)
+        #    lemma_token = ' '.join([x.lemma_ for x in doc]) 
+        #    lemma_tokens_without_sc_and_sw.append(lemma_token)
         
         
-        curr_sent = (" ").join(lemma_tokens_without_sc_and_sw)
+        curr_sent = (" ").join(tokens_without_sc)
         filtered_sentences.append(curr_sent)
     
     

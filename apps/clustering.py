@@ -1,46 +1,32 @@
-
 import time
-import random
+from app import app
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 import pandas as pd
-from app import app
-import umap.umap_ as umap
+import numpy as np
 import torch
 import apps.clusterView as cView
 import dash
 import json
 import plotly.figure_factory as ff
-from app import vectorizer
 import scipy.cluster.hierarchy as sch
-import plotly.graph_objects as go
-from scipy.spatial.distance import pdist, squareform
 from sklearn.cluster import AgglomerativeClustering
 import plotly.express as px
-from transformers import AutoTokenizer, AutoModel
-tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-token_model = AutoModel.from_pretrained('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 from sentence_transformers import SentenceTransformer
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
-from plotly.graph_objs import *
-#favorit
-#model1 = SentenceTransformer('distilbert-base-nli-mean-tokens') #erst complete
-model2 = SentenceTransformer('distiluse-base-multilingual-cased-v1') #erst complete
 
+#embedding
+BERTmodel = SentenceTransformer('distiluse-base-multilingual-cased-v1') #erst complete
+
+# topic-modeling
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
-#offen
 
-
-# ausgeschieden
-#model3 = SentenceTransformer('all-mpnet-base-v2')
-#model4 = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
-
-from nltk.corpus import stopwords
+## Dimension Reduction
+import umap.umap_ as umap
+from sklearn.manifold import TSNE
 
 #word tokenizer
 from nltk.tokenize import word_tokenize
@@ -53,6 +39,7 @@ from nltk.stem import PorterStemmer
 porter = PorterStemmer()
 
 #stopwords
+from nltk.corpus import stopwords
 text_file = open('./assets/txt/stopwords.txt', 'r', encoding='utf-8')
 swords = text_file.read()
 text_file.close()
@@ -60,12 +47,6 @@ liste_der_unerwuenschten_woerter = swords.split()
 
 german_stop_words = liste_der_unerwuenschten_woerter #+ stopwords.words('german')
 
-import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
-
-
-#Generate 10 random numbers between 10 and 30
-randomlist = random.sample(range(0, 878), 10)
 
 layout=dbc.Container([
     dcc.Store(id='vectors', storage_type='memory'),
@@ -357,152 +338,148 @@ def update_drops(data, clusters, value):
                 Output('clusters', 'data'),
                 Output('show-cluster-plot', 'children'),
                 Output('listOfTopics', 'data'),],
-            [Input('count_clusters', 'value')],
-            [State('main_data_after_preperation', 'data'), State('choosen-col', 'value'), State('vectors', 'data')])
-def show_clusters(k, data, col, vectors):
-    if data is not None and col != "-" and k[0] > 1:
+            [Input('count_clusters', 'value'),
+            Input('vectors', 'data')],
+            [State('main_data_after_preperation', 'data'),
+            State('choosen-col', 'value')])
+def show_clusters(k, vectors, data, col):
+    
+    if data is not None and col != "-":
         df = pd.read_json(data, orient='split')
         df = df.dropna(subset=[col])
-
-        # if vectors is not None:
-        #     vectors = json.dumps(vectors)
-
-       
-        cluster = get_Clusters(k[0], vectors)
-        scatter = plot_2d(vectors, cluster)
-        df["Cluster"] = cluster+1
-        print(col)
-        print(df[col])
-        tfidf, listOfTopics  = getTopics(df, col)
-        print(tfidf[0])
-      
-
-        clusters = list(dict.fromkeys(cluster))
-        clusters.sort()
-        children = []
+        if k[0] < 2:
+            scatter = plot_2d(vectors, None, df.index.values.tolist())
+            return None, None, dcc.Graph(figure=scatter), None
+        
+        else:
+            cluster = get_Clusters(k[0], vectors)
+            scatter = plot_2d(vectors, cluster, df.index.values.tolist())
+            df["Cluster"] = cluster+1
+            tfidf, listOfTopics  = getTopics(df, col)
+            clusters = list(dict.fromkeys(cluster))
+            clusters.sort()
+            children = []
         
         
-        for clu in clusters:
-            is_open = False
-            clu = clu+1
-            if clu == 1:
-                is_open = True
+            for clu in clusters:
+                is_open = False
+                clu = clu+1
+                if clu == 1:
+                    is_open = True
 
-            print(clu)
-            top5topics = tfidf[clu-1][:10]
-            print(top5topics)
-            df_c= df.loc[df['Cluster'] == clu]
-            count_values =(len(df_c.columns)*(len(df_c.index)))
-            percent_float = (df_c.isnull().sum().sum()/count_values)
-            percent_int = round(percent_float*100)
-            new_collapse = html.Div([
-                    html.H2(["Cluster " + str(clu)], id={'type':'dynamic-btn', 'index': int(clu)},
-                        n_clicks=0,
-                        style={'background': '#f2f2f2', 'color' : '#3c4143', 'width':'max',
-                        "border-bottom": "2px #3c414350 solid", "padding": "20px 10px", "margin" : "0"}
-                    ),
-                    dbc.Collapse(
-                       html.Div([
-                            html.H2('Informationen'),
-                            html.Hr(style={'margin': '0 0 5px 0', 'padding':'0'}),
-                            dbc.Row([
-                                dbc.Col(html.Div([
-                                    dbc.Row([
-                                        html.P('Anzahl der Zeilen gesamt: ', className='card-text2', style={'font-weight': 'bold'}),
-                                        html.P(str(len(df_c.index)), className='card-text2'),
-                                    ], style={'margin-left':'3px'}),
-                                    dbc.Row([
-                                        html.P('Anzahl der Spalten gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                        html.P(str(len(df_c.columns)), className='card-text2'),
-                                    ], style={'margin-left':'3px'}),
-                                    dbc.Row([
-                                        html.P('Anzahl Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                        html.P(str(count_values), className='card-text2')
-                                    ], style={'margin-left':'3px'}),
-                                    dbc.Row([
-                                        html.P('Anzahl leerer Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
-                                        html.P(str(df_c.isnull().sum().sum()) + ' (' + str(percent_int) + '%)', className='card-text2')
-                                    ], style={'margin-left':'3px'})
-
-                                    ]),width=4),
-                                dbc.Col(html.Div([
-                                        html.P('Top-10-Themen: ' , className='card-text2', style={'font-weight': 'bold'}),
+                top5topics = tfidf[clu-1][:10]
+                df_c= df.loc[df['Cluster'] == clu]
+                count_values =(len(df_c.columns)*(len(df_c.index)))
+                percent_float = (df_c.isnull().sum().sum()/count_values)
+                percent_int = round(percent_float*100)
+                new_collapse = html.Div([
+                        html.H2(["Cluster " + str(clu)], id={'type':'dynamic-btn', 'index': int(clu)},
+                            n_clicks=0,
+                            style={'background': '#f2f2f2', 'color' : '#3c4143', 'width':'max',
+                            "border-bottom": "2px #3c414350 solid", "padding": "20px 10px", "margin" : "0"}
+                        ),
+                        dbc.Collapse(
+                        html.Div([
+                                html.H2('Informationen'),
+                                html.Hr(style={'margin': '0 0 5px 0', 'padding':'0'}),
+                                dbc.Row([
+                                    dbc.Col(html.Div([
                                         dbc.Row([
-                                            dbc.Col(html.Div([
-                                                dbc.Row([
-                                                    html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[0]) + " (" + str(round(top5topics['tfidf'].tolist()[0], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
-                                                
-                                                dbc.Row([
-                                                    html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[1]) + " (" + str(round(top5topics['tfidf'].tolist()[1], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
-                                                
-                                                dbc.Row([
-                                                    html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[2]) + " (" + str(round(top5topics['tfidf'].tolist()[2], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
+                                            html.P('Anzahl der Zeilen gesamt: ', className='card-text2', style={'font-weight': 'bold'}),
+                                            html.P(str(len(df_c.index)), className='card-text2'),
+                                        ], style={'margin-left':'3px'}),
+                                        dbc.Row([
+                                            html.P('Anzahl der Spalten gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                            html.P(str(len(df_c.columns)), className='card-text2'),
+                                        ], style={'margin-left':'3px'}),
+                                        dbc.Row([
+                                            html.P('Anzahl Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                            html.P(str(count_values), className='card-text2')
+                                        ], style={'margin-left':'3px'}),
+                                        dbc.Row([
+                                            html.P('Anzahl leerer Zellen gesamt: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                            html.P(str(df_c.isnull().sum().sum()) + ' (' + str(percent_int) + '%)', className='card-text2')
+                                        ], style={'margin-left':'3px'})
 
-                                                dbc.Row([
-                                                    html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[3]) + " (" + str(round(top5topics['tfidf'].tolist()[3], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
+                                        ]),width=4),
+                                    dbc.Col(html.Div([
+                                            html.P('Top-10-Themen: ' , className='card-text2', style={'font-weight': 'bold'}),
+                                            dbc.Row([
+                                                dbc.Col(html.Div([
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('1: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[0]) + " (" + str(round(top5topics['tfidf'].tolist()[0], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
+                                                    
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('2: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[1]) + " (" + str(round(top5topics['tfidf'].tolist()[1], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
+                                                    
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('3: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[2]) + " (" + str(round(top5topics['tfidf'].tolist()[2], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
 
-                                                dbc.Row([
-                                                    html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[4]) + " (" + str(round(top5topics['tfidf'].tolist()[4], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('4: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[3]) + " (" + str(round(top5topics['tfidf'].tolist()[3], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
 
-                                            ]),width=4),
-                                            dbc.Col(html.Div([
-                                                dbc.Row([
-                                                    html.P('6: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[5]) + " (" + str(round(top5topics['tfidf'].tolist()[5], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
-                                                
-                                                dbc.Row([
-                                                    html.P('7: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[6]) + " (" + str(round(top5topics['tfidf'].tolist()[6], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
-                                                
-                                                dbc.Row([
-                                                    html.P('8: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[7]) + " (" + str(round(top5topics['tfidf'].tolist()[7], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('5: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[4]) + " (" + str(round(top5topics['tfidf'].tolist()[4], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
 
-                                                dbc.Row([
-                                                    html.P('9: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[8]) + " (" + str(round(top5topics['tfidf'].tolist()[8], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
+                                                ]),width=4),
+                                                dbc.Col(html.Div([
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('6: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[5]) + " (" + str(round(top5topics['tfidf'].tolist()[5], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
+                                                    
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('7: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[6]) + " (" + str(round(top5topics['tfidf'].tolist()[6], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
+                                                    
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('8: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[7]) + " (" + str(round(top5topics['tfidf'].tolist()[7], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
 
-                                                dbc.Row([
-                                                    html.P('10: ', className='card-text2', style={'font-weight': 'bold'}),
-                                                    html.P(str(top5topics.index.values.tolist()[9]) + " (" + str(round(top5topics['tfidf'].tolist()[9], 5)) + ")", className='card-text2')
-                                                ], style={'margin-left':'20px'}),
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('9: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[8]) + " (" + str(round(top5topics['tfidf'].tolist()[8], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
+
+                                                    dbc.Row([
+                                                        dbc.Col(html.P('10: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P(str(top5topics.index.values.tolist()[9]) + " (" + str(round(top5topics['tfidf'].tolist()[9], 5)) + ")", className='card-text2'))
+                                                    ], style={'margin-left':'20px'}),
 
 
-                                            ]),width=8),
-                                        ])
+                                                ]),width=4),
+                                            ])
 
-                                    ]), width=8)
-                            ], style={'margin':'0 0 25px 3px'}),
-                            dbc.Button(["Mehr zu Cluster " + str(clu) + "..."], id={'type':'dynamic-more-btn', 'index': int(clu)},
-                                color="secondary",
-                                n_clicks=0,
-                            ),
+                                        ]), width=8)
+                                ], style={'margin':'0 0 25px 3px'}),
+                                dbc.Button(["Mehr zu Cluster " + str(clu) + "..."], id={'type':'dynamic-more-btn', 'index': int(clu)},
+                                    color="secondary",
+                                    n_clicks=0,
+                                ),
 
-                        ]), style={'background': '#3c414330', 'color' : '#3c4143', 'width':'max','margin':'-2px 0 0 0', "padding":"15px", "border-bottom": "2px #3c414350 solid"},
-                        id={'type':'cluster-collapse', 'index': int(clu)},
-                        is_open=is_open
-                    ),
-                    
-                ])
+                            ]), style={'background': '#3c414330', 'color' : '#3c4143', 'width':'max','margin':'-2px 0 0 0', "padding":"15px", "border-bottom": "2px #3c414350 solid"},
+                            id={'type':'cluster-collapse', 'index': int(clu)},
+                            is_open=is_open
+                        ),
+                        
+                    ])
 
-            children.append(new_collapse)
-        
-        
-        return children, df["Cluster"], dcc.Graph(figure=scatter), listOfTopics
+                children.append(new_collapse)
+            
+            
+            return children, df["Cluster"], dcc.Graph(figure=scatter), listOfTopics
     else:
         return None, None, None, None
 
@@ -593,7 +570,7 @@ def get_Dendro(vectors, labels):
     #     dendro['data'][i]['yaxis'] = 'y2'
         
     # # Create Side Dendrogram
-    # dendro_side = ff.create_dendrogram(vectors, orientation='right')
+    # dendro_side = ff.create_dendrogram(vectors, orientation='right', linkagefun=lambda x: sch.linkage(vectors, "average", "cosine"))
     # for i in range(len(dendro_side['data'])):
     #     dendro_side['data'][i]['xaxis'] = 'x2'
             
@@ -676,89 +653,6 @@ def get_Clusters(k, vectors):
     
     return Hclustering.labels_
 
-def sent2vec(sentences):
-    print(sentences[6])
-    filtered_sentences = []
-    for sent in sentences:
-        # tokenization
-        sent_token = word_tokenize(sent)
-
-        #removing special characters
-        tokens_without_sc = []
-        for token in sent_token:
-            word = ''.join(e for e in token if e.isalnum())
-            if word != '':
-                tokens_without_sc.append(word)
-        
-        #removing stopwords
-        tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
-
-        #stemming
-        stemmed_tokens_without_sc_and_sw = []
-        for word in tokens_without_sc_an_sw:
-            stemmed_tokens_without_sc_and_sw.append(porter.stem(word))
-
-        curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
-        filtered_sentences.append(curr_sent)
-    print(filtered_sentences[6])
-    
-    vectorizer.bert(filtered_sentences)
-    vecs = vectorizer.vectors
-    print("Dimensionen: " + str(len(vecs[0])))
-    vectors = vecstoXd(vecs, round(len(vecs)*0.4), 2)
-
-    return vectors
-
-
-#Mean Pooling - Take attention mask into account for correct averaging
-def mean_pooling(model_output, attention_mask):
-    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
-
-def old_bert(sentences):
-    print(sentences[6])
-    filtered_sentences = []
-    for sent in sentences:
-        # tokenization
-        sent_token = word_tokenize(sent)
-
-        #removing special characters
-        tokens_without_sc = []
-        for token in sent_token:
-            word = ''.join(e for e in token if e.isalnum())
-            if word != '':
-                tokens_without_sc.append(word)
-        
-        #removing stopwords
-        tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
-
-        #stemming
-        stemmed_tokens_without_sc_and_sw = []
-        for word in tokens_without_sc_an_sw:
-            stemmed_tokens_without_sc_and_sw.append(porter.stem(word))
-
-        curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
-        filtered_sentences.append(curr_sent)
-    print(filtered_sentences[6])
-
-
-
-    # Tokenize sentences
-    encoded_input = tokenizer(filtered_sentences, padding=True, truncation=True, return_tensors='pt')
-
-    # Compute token embeddings
-    with torch.no_grad():
-        model_output = token_model(**encoded_input)
-
-    # Perform pooling. In this case, max pooling.
-    vecs = mean_pooling(model_output, encoded_input['attention_mask'])
-    print("Dimensionen: " + str(len(vecs[0])))
-
-    vectors = vecstoXd(vecs, round(len(vecs)*0.4), 2)
-    
-    return vectors
-
 def new_bert(sentences):
     filtered_sentences = []
     
@@ -784,24 +678,47 @@ def new_bert(sentences):
         curr_sent = (" ").join(stemmed_tokens_without_sc_and_sw)
         filtered_sentences.append(curr_sent)
 
-    vecs = model2.encode(filtered_sentences, show_progress_bar=True)
+    vecs = BERTmodel.encode(filtered_sentences, show_progress_bar=True)
     vectors = vecstoXd(vecs, 20, 2)
     
     return vectors
 
 def vecstoXd(vecs, nneighbors, x):
     #reducer = umap.UMAP(random_state=42, n_neighbors=len(vecs[0]), n_components=2, metric='cosine', min_dist=0.5)
-    reducer = umap.UMAP(random_state=42, n_neighbors=nneighbors, n_components=x, metric='cosine', min_dist=0.8)
-    vec2d= reducer.fit_transform(vecs)
+    #reducer = umap.UMAP(random_state=42, n_neighbors=nneighbors, n_components=x, metric='cosine', min_dist=0.8)
+    #vec2d= reducer.fit_transform(vecs)
+
+    reducer = TSNE(n_components=2, verbose=10, random_state=42, metric="cosine")
+
+    vec2d=reducer.fit_transform(vecs)
         
     return vec2d
 
-def plot_2d(vectors, clusterLabels):
+def plot_2d(vectors, clusterLabels, index):
     result = pd.DataFrame(vectors, columns=['x','y'])
-    result['Cluster'] = clusterLabels+1
-    result["Cluster"] = result["Cluster"].astype(str)
+    result["Index"] = index
    
-    fig = px.scatter(result, x="x", y="y", color='Cluster', symbol="Cluster", color_continuous_scale=["red", "orange", "yellowgreen", "green", "olive", "blue", "navy", "grey"])
+    if clusterLabels is not None:
+
+        result['Cluster'] = clusterLabels+1
+        result["Cluster"] = result["Cluster"].astype(str)
+        fig = px.scatter(result, x="x", y="y", color='Cluster', symbol="Cluster", color_continuous_scale=["red", "orange", "yellowgreen", "green", "olive", "blue", "navy", "grey"], custom_data=['Index', 'Cluster'])
+        fig.update_traces(hovertemplate="<br>".join([
+            "X: %{x}",
+            "Y: %{y}",
+            "Index: %{customdata[0]}",
+            "Cluster: %{customdata[1]}"
+            ])
+        ) 
+
+    else:
+        fig = px.scatter(result, x="x", y="y", custom_data=['Index'])
+
+        fig.update_traces(hovertemplate="<br>".join([
+            "X: %{x}",
+            "Y: %{y}",
+            "Index: %{customdata[0]}"
+        ]))        
 
     #fig.layout.plot_bgcolor = 'rgba(0,0,0,0)'
     #fig.layout.paper_bgcolor = 'rgba(0,0,0,0)'
@@ -840,14 +757,15 @@ def getTopics(df, col):
        
         #removing stopwords
         tokens_without_sc_an_sw = [word for word in tokens_without_sc if not word.lower() in german_stop_words]
-        #lemmatization
-        lemma_tokens_without_sc_and_sw = []
-        for w in tokens_without_sc_an_sw:
-            doc = lemma(w)
-            lemma_token = ' '.join([x.lemma_ for x in doc]) 
-            lemma_tokens_without_sc_and_sw.append(lemma_token)
         
-        curr_sent = (" ").join(lemma_tokens_without_sc_and_sw)
+        #lemmatization
+        #lemma_tokens_without_sc_and_sw = []
+        #for w in tokens_without_sc_an_sw:
+        #    doc = lemma(w)
+        #    lemma_token = ' '.join([x.lemma_ for x in doc]) 
+        #    lemma_tokens_without_sc_and_sw.append(lemma_token)
+        
+        curr_sent = (" ").join(tokens_without_sc_an_sw)
         docs.append(curr_sent)
     cv=CountVectorizer()
     word_count_vector=cv.fit_transform(docs)
