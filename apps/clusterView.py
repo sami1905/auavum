@@ -175,54 +175,54 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col, listOfTopics):
                                 dbc.Row([
                                     dbc.Col(html.Div([
                                         dbc.Row([
-                                            dbc.Col(html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('1: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[0]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[0], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
                                                 
                                         dbc.Row([
-                                            dbc.Col(html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('2: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[1]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[1], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
                                                 
                                         dbc.Row([
-                                            dbc.Col(html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('3: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[2]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[2], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
 
                                         dbc.Row([
-                                            dbc.Col(html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('4: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[3]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[3], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
 
                                         dbc.Row([
-                                            dbc.Col(html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('5: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[4]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[4], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
 
                                     ]),width=5),
                                     dbc.Col(html.Div([
                                         dbc.Row([
-                                            dbc.Col(html.P('6: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('6: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[5]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[5], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
                                                
                                         dbc.Row([
-                                            dbc.Col(html.P('7: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('7: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[6]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[6], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
                                                 
                                         dbc.Row([
-                                            dbc.Col(html.P('8: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('8: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[7]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[7], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
 
                                         dbc.Row([
-                                            dbc.Col(html.P('9: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('9: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[8]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[8], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
 
                                         dbc.Row([
-                                            dbc.Col(html.P('10: ', className='card-text2', style={'font-weight': 'bold'}),width=2),
+                                            dbc.Col(html.P('10: ', className='card-text2', style={'font-weight': 'bold'}),width=4),
                                             dbc.Col(html.P(str(listOfClusterTopic.index.values.tolist()[9]) + " (" + str(round(listOfClusterTopic['tfidf'].tolist()[9], 5)) + ")", className='card-text2'))
                                         ], style={'margin-left':'20px'}),
 

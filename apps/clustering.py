@@ -407,54 +407,54 @@ def show_clusters(k, vectors, data, col):
                                             dbc.Row([
                                                 dbc.Col(html.Div([
                                                     dbc.Row([
-                                                        dbc.Col(html.P('1: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('1: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[0]) + " (" + str(round(top5topics['tfidf'].tolist()[0], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
                                                     
                                                     dbc.Row([
-                                                        dbc.Col(html.P('2: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('2: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[1]) + " (" + str(round(top5topics['tfidf'].tolist()[1], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
                                                     
                                                     dbc.Row([
-                                                        dbc.Col(html.P('3: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('3: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[2]) + " (" + str(round(top5topics['tfidf'].tolist()[2], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
 
                                                     dbc.Row([
-                                                        dbc.Col(html.P('4: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('4: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[3]) + " (" + str(round(top5topics['tfidf'].tolist()[3], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
 
                                                     dbc.Row([
-                                                        dbc.Col(html.P('5: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('5: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[4]) + " (" + str(round(top5topics['tfidf'].tolist()[4], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
 
                                                 ]),width=4),
                                                 dbc.Col(html.Div([
                                                     dbc.Row([
-                                                        dbc.Col(html.P('6: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('6: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[5]) + " (" + str(round(top5topics['tfidf'].tolist()[5], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
                                                     
                                                     dbc.Row([
-                                                        dbc.Col(html.P('7: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('7: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[6]) + " (" + str(round(top5topics['tfidf'].tolist()[6], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
                                                     
                                                     dbc.Row([
-                                                        dbc.Col(html.P('8: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('8: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[7]) + " (" + str(round(top5topics['tfidf'].tolist()[7], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
 
                                                     dbc.Row([
-                                                        dbc.Col(html.P('9: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('9: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[8]) + " (" + str(round(top5topics['tfidf'].tolist()[8], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
 
                                                     dbc.Row([
-                                                        dbc.Col(html.P('10: ', className='card-text2', style={'font-weight': 'bold'}), width=1),
+                                                        dbc.Col(html.P('10: ', className='card-text2', style={'font-weight': 'bold'}), width=3),
                                                         dbc.Col(html.P(str(top5topics.index.values.tolist()[9]) + " (" + str(round(top5topics['tfidf'].tolist()[9], 5)) + ")", className='card-text2'))
                                                     ], style={'margin-left':'20px'}),
 
@@ -688,7 +688,7 @@ def vecstoXd(vecs, nneighbors, x):
     #reducer = umap.UMAP(random_state=42, n_neighbors=nneighbors, n_components=x, metric='cosine', min_dist=0.8)
     #vec2d= reducer.fit_transform(vecs)
 
-    reducer = TSNE(n_components=2, verbose=10, random_state=42, metric="cosine")
+    reducer = TSNE(n_components=2, verbose=10, random_state=41, metric="cosine")
 
     vec2d=reducer.fit_transform(vecs)
         
