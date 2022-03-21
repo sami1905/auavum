@@ -107,7 +107,7 @@ layout = dbc.Container([
                 dbc.Row([
                     dbc.Col(dcc.Link(dbc.Button('Zurück', color='secondary', style={'textAlign': 'center'}), href='/'), width=1),
                     dbc.Col(width=10),
-                    dbc.Col(dcc.Link(dbc.Button('Weiter', color='secondary', style={'textAlign': 'center'}, id='next-btn', n_clicks=0), href='/verfahren-waehlen'), width=1),
+                    dbc.Col(dcc.Link(dbc.Button('Weiter', color='secondary', style={'textAlign': 'center'}, id='next-btn', n_clicks=0), href='/daten-spezifizieren'), width=1),
                 ]), 
                 
             ])                

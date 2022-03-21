@@ -6,7 +6,7 @@ from dash import html
 
 #connect to main app.py file and to apps
 from app import app, server
-from apps import summarizer_layout, upload_file, error, wartung, data_preparation, method_lobby, chart_dashboard_layout, interactive_charts_layout, topic, clustering, profiling_layout, sentiment_layout
+from apps import summarizer_layout, upload_file, error, wartung,data_spezification, data_preparation, method_lobby, chart_dashboard_layout, interactive_charts_layout, topic, clustering, profiling_layout, sentiment_layout
 
 
 
@@ -40,6 +40,8 @@ def display_page(pathname):
 #         return upload_file.layout
     if pathname == '/daten-vorbereiten':
         return data_preparation.layout
+    if pathname == '/daten-spezifizieren':
+        return data_spezification.layout
     if pathname == '/verfahren-waehlen':
         return method_lobby.layout
     if pathname == '/diagramm-dashboard':
