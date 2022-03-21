@@ -78,7 +78,7 @@ layout = dbc.Container([
                         
         ], className='setting-card'),
         dbc.Card([
-           html.Div(id='spezification-table')
+           html.Div(id='spezification-table', style={'text-align':'left'})
                         
         ], className='setting-card')  
     ], id='data-spezification', style={'display':'none'}),
