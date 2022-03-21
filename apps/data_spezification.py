@@ -78,9 +78,9 @@ layout = dbc.Container([
                         
         ], className='setting-card'),
         dbc.Card([
-           html.Div(id='spezification-table', style={'text-align':'left'})
+           html.Div(id='spezification-table', style={'text-align':'left', 'padding':'30px'})
                         
-        ], className='setting-card')  
+        ], className='data-card')  
     ], id='data-spezification', style={'display':'none'}),
 ], className='content', fluid=True)
 
@@ -92,7 +92,7 @@ def show_table(data):
         
                           
         children_table = [
-            html.H2('Tabelle', style={'margin': '20px 0 5px 0', 'padding':'0'}),
+            html.H2('Daten', style={'margin': '20px 0 5px 0', 'padding':'0'}),
             html.Hr(style={'margin': '0 0 20px 0', 'padding':'0'}),
             dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True, responsive=True)
         ]
