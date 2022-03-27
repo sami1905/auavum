@@ -15,6 +15,8 @@ import scipy.cluster.hierarchy as sch
 from sklearn.cluster import AgglomerativeClustering
 import plotly.express as px
 from sentence_transformers import SentenceTransformer
+import xlsxwriter
+import io 
 
 #embedding
 BERTmodel = SentenceTransformer('distiluse-base-multilingual-cased-v1') #erst complete
@@ -50,7 +52,8 @@ german_stop_words = liste_der_unerwuenschten_woerter #+ stopwords.words('german'
 
 layout=dbc.Container([
     dcc.Store(id='vectors', storage_type='memory'),
-    dcc.Store(id='clusters', storage_type='memory'),    
+    dcc.Store(id='clusters', storage_type='memory'), 
+    dcc.Store(id='clustered_df', storage_type='memory'),    
     #dcc.Store(id='clustered-data', storage_type='memory'),
     # if main_data == None
     html.Div([
@@ -108,6 +111,18 @@ layout=dbc.Container([
                 dbc.CardBody([
                     html.H4("Clustering-Analyse", style={'text-align': 'left'}),
                     html.Hr(style={'margin': '0 0 10px 0', 'padding':'0'}),
+                    dbc.Row([
+                        dbc.Col(width=11),
+                        dbc.Col(
+                            dbc.DropdownMenu([
+                                dbc.DropdownMenuItem(".CSV", id="download-1", n_clicks=0), 
+                                dbc.DropdownMenuItem(".XLSX", id="download-2", n_clicks=0)
+                            ], label="Download", group=True, id="download", color="dark", style={'display':'None'}), width=1),
+                    ], style={'text-align':'center', 'margin':'40px 0px 0px 0px'}),
+                    
+                    dcc.Download(id="download-clustering-csv"),
+                    dcc.Download(id="download-clustering-xlsx"),
+
                     dbc.Row([
                         dbc.Col(
                             html.Div([
@@ -198,6 +213,7 @@ def tab_content(active_tab):
             [Input('choosen-col', 'value')],
             [State('main_data_after_preperation', 'data')])
 def show_dendro(col, data):
+
     print("Start 'show_dendro'")
     start = time.perf_counter()
     if data is not None and col != "-":
@@ -304,6 +320,44 @@ def show_table(data, clusters, show_cols, col, filter_cluster):
     
     else: return None, None
 
+@app.callback([Output('download-clustering-csv', 'data'),
+            Output('download-clustering-xlsx', 'data'),
+            Output('download-1', 'n_clicks'),
+            Output('download-2', 'n_clicks')],
+            Input('download-1', 'n_clicks'),
+            Input('download-2', 'n_clicks'),
+            State('clustered_df', 'data'),
+            State('listOfTopics', 'data'),
+            prevent_initial_call=True,)
+def download(csv, xlsx, data, listOfTopics):
+    df = pd.read_json(data, orient='split')
+    df_names = []
+    df_list = []
+    x=1
+
+    for top in listOfTopics:
+        df_list.append(pd.read_json(top, orient='split'))
+        df_names.append('Cluster ' + str(x))
+        x=x+1
+
+    if csv:
+        return dcc.send_data_frame(df.to_csv, "clustering.csv"), None, 0, 0
+    elif xlsx:
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine="xlsxwriter")
+        df.to_excel(writer, sheet_name="Clustering")
+        for num,dftoExcel in enumerate(df_list):
+           copytoexcel = pd.DataFrame(dftoExcel)
+           copytoexcel.to_excel(writer, sheet_name=df_names[num])
+        writer.save()
+
+        return None, dcc.send_bytes(output.getvalue(), "clustering.xlsx"), 0, 0
+    
+    else:
+        return None, None, 0,0
+
+
+
 @app.callback([Output('filter-cluster', 'options'),
             Output('filter-cols', 'options'), Output('filter-cols', 'value')],
              Input('main_data_after_preperation', 'data'),
@@ -337,19 +391,24 @@ def update_drops(data, clusters, value):
 @app.callback([Output('show-clusters', 'children'),
                 Output('clusters', 'data'),
                 Output('show-cluster-plot', 'children'),
-                Output('listOfTopics', 'data'),],
+                Output('listOfTopics', 'data'),
+                Output('download', 'style'),
+                Output('clustered_df', 'data')],
             [Input('count_clusters', 'value'),
             Input('vectors', 'data')],
             [State('main_data_after_preperation', 'data'),
             State('choosen-col', 'value')])
 def show_clusters(k, vectors, data, col):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
+    
     
     if data is not None and col != "-":
         df = pd.read_json(data, orient='split')
         df = df.dropna(subset=[col])
         if k[0] < 2:
             scatter = plot_2d(vectors, None, df.index.values.tolist())
-            return None, None, dcc.Graph(figure=scatter), None
+            return None, None, dcc.Graph(figure=scatter), None, style2, None
         
         else:
             cluster = get_Clusters(k[0], vectors)
@@ -479,9 +538,9 @@ def show_clusters(k, vectors, data, col):
                 children.append(new_collapse)
             
             
-            return children, df["Cluster"], dcc.Graph(figure=scatter), listOfTopics
+            return children, df["Cluster"], dcc.Graph(figure=scatter), listOfTopics, style1, df.to_json(date_format='iso', orient='split')
     else:
-        return None, None, None, None
+        return None, None, None, None, style2, None
 
    
 @app.callback(
@@ -554,7 +613,6 @@ def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, listOfTopics, 
     
     else:
         return view, style2, style1, clicks, back_clicks
-
 
 
 def get_Dendro(vectors, labels):
@@ -797,7 +855,7 @@ def getTopics(df, col):
 
     listOfTopics = []
     for top in results:
-        listOfTopics.append(top[:10].to_json(date_format='iso', orient='split'))
+        listOfTopics.append(top.to_json(date_format='iso', orient='split'))
         
     return results, listOfTopics
 
