@@ -1,3 +1,4 @@
+from importlib.resources import contents
 import time
 from app import app
 from dash.dependencies import Input, Output, State, MATCH, ALL
@@ -342,6 +343,7 @@ def download(csv, xlsx, data, listOfTopics):
 
     if csv:
         return dcc.send_data_frame(df.to_csv, "clustering.csv"), None, 0, 0
+    
     elif xlsx:
         output = io.BytesIO()
         writer = pd.ExcelWriter(output, engine="xlsxwriter")

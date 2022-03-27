@@ -116,7 +116,17 @@ def show_cluster(cluster_nr, data, listOfFrei, listOfFest, col, listOfTopics):
                             html.P('Cluster ' + str(cluster_nr), style={'margin-bottom': '5px'}, className='card-text1')
                         ]),width=10),
                         dbc.Col(width=1),
-                    ])
+                    ]),
+                    dbc.Row([
+                        dbc.Col(width=11),
+                        dbc.Col(
+                            dbc.DropdownMenu([
+                                dbc.DropdownMenuItem(".CSV", id="download-3", n_clicks=0), 
+                                dbc.DropdownMenuItem(".XLSX", id="download-4", n_clicks=0)
+                            ], label="Download", group=True, id="download2", color="dark", style={'display':'None'}), width=1),
+                    ], style={'text-align':'center', 'margin':'40px 0px 0px 0px'}),
+                    dcc.Download(id="download-cluster-csv"),
+                    dcc.Download(id="download-cluster-xlsx"),
                 ])
             ], className='deskriptiv-card'),
             dbc.Row([
@@ -303,6 +313,48 @@ def update_profile_content(value, data):
         return None
 
 
+@app.callback(Output('download2', 'style'),
+               [Input('summary', 'data')])
+def showDownload(data):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
+    if data is not None:
+        return style1
+    else:
+        return style2
 
+
+@app.callback([Output('download-cluster-csv', 'data'),
+            Output('download-cluster-xlsx', 'data'),
+            Output('download-3', 'n_clicks'),
+            Output('download-4', 'n_clicks')],
+            Input('download-3', 'n_clicks'),
+            Input('download-4', 'n_clicks'),
+            State('clusterdata', 'data'),
+            State('listOfTopics', 'data'),
+            State('summary', 'data'),
+            State('listOfSentiment', 'data'),
+            State('choosen-col', 'value'),
+            prevent_initial_call=True,)
+def download(csv, xlsx, data, listOfTopics, summary, listOfSentiment, col):
+    df = pd.read_json(data, orient='split')
+    df_sent= pd.read_json(listOfSentiment, orient='split')
+    df_sent=df_sent.set_index('Index')
+    print(df_sent)
+    df['Summarization (' + col + ')'] = summary[0]
+    df['Polarität(' + col + ')'] = df_sent['Polarität']
+    df['Subjektivität(' + col + ')'] = df_sent['Subjektivität']
+    print(df)
+
+    cluster = df['Cluster'].values.tolist()
+
+    if csv:
+        return dcc.send_data_frame(df.to_csv, "cluster"+str(cluster[0])+".csv"), None, 0, 0
+    
+    elif xlsx:
+        return dcc.send_data_frame(df.to_excel, "cluster"+str(cluster[0])+".xlsx", sheet_name="Cluster"), None, 0, 0
+    
+    else:
+        return None, None, 0,0
 
 

@@ -55,7 +55,8 @@ def layout(text, index):
     ],style={'text-align':'left'}, fluid=True)
     return children
 
-@app.callback(Output("sentiment-content", "children"),
+@app.callback([Output("sentiment-content", "children"),
+            Output('listOfSentiment', 'data')],
                 [Input('pol-slider', 'value'),
                 Input('sub-slider', 'value')],
                 [State('sentiment-data', 'data'),
@@ -105,6 +106,8 @@ def get_sentiment(polvalues, subvalues, texts, index):
                         'Polarität': list_polarity,
                         'Subjektivität': list_subjektivity,
                         'Anzahl Zeichen': list_countCharts})
+    
+    df_output = df.copy()
     
     
     
@@ -358,5 +361,5 @@ def get_sentiment(polvalues, subvalues, texts, index):
 
     ], style={"margin" : "20px"})
 
-    return children    
+    return children, df_output.to_json(date_format='iso', orient='split')
 

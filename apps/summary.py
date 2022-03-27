@@ -4,7 +4,7 @@ from dash import dcc
 from dash import html
 from app import app
 from summarizer.sbert import SBertSummarizer
-
+import pandas as pd
 
 summary_model  =  SBertSummarizer ('distiluse-base-multilingual-cased-v1') 
 
@@ -33,20 +33,27 @@ def layout(text):
     ],style={'text-align':'left'}, fluid=True)
     return children
 
-@app.callback(Output("summary-content", "children"), 
+@app.callback([Output("summary-content", "children"),
+                Output("summary","data")], 
                 [Input("count_sent", "value"),
                 Input('summary-data', 'data')]
 )
 def get_summary(k, data):
     if k[0] != 0:
+        summary =summarize(data, k[0])
         children = dbc.Row([
             html.P('Zusammenfassung: ', className='card-text2', style={'font-weight': 'bold'}),
-            html.P(summarize(data, k[0]), className='card-text2'),
+            html.P(summary, className='card-text2'),
         ], style={'margin-left':'3px', 'text-align':'left'})
 
-        return children
+        listSum=[summary]
+
+
+
+
+        return children, listSum
     else:
-        return None
+        return None, None
 
 
 def summarize(text, k):
