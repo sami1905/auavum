@@ -787,7 +787,7 @@ def plot_2d(vectors, clusterLabels, index):
     return fig
 
 def getTopics(df, col):
-    print("start topic")
+
     size_cluster = len(df['Cluster'].value_counts())
     
     raw_docs = []
@@ -853,7 +853,6 @@ def getTopics(df, col):
         
         results.append(df.sort_values(by=["tfidf"],ascending=False))
     #print the scores 
-    print("finished topic")
 
     listOfTopics = []
     for top in results:

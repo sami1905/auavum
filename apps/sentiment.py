@@ -1,3 +1,4 @@
+from re import I
 from dash.dependencies import Input, Output, State, ALL, ALLSMALLER, MATCH
 import dash_bootstrap_components as dbc
 from dash import dcc
@@ -6,8 +7,15 @@ from app import app
 from textblob_de import TextBlobDE as TextBlob
 import pandas as pd
 import plotly.express as px
-#word tokenizer
-from nltk.tokenize import word_tokenize
+#from functions import sentimentModel
+
+#sentModel = sentimentModel.GSBertPolarityModel()
+
+#tokenizer
+from nltk.tokenize import word_tokenize, sent_tokenize
+import nltk
+
+
 
 #lemmatization
 import spacy
@@ -27,6 +35,17 @@ def layout(text, index):
     children = dbc.Container([
         dcc.Store(id='sentiment-data', storage_type='memory', data=text),
         dcc.Store(id='sentiment-index', storage_type='memory', data=index),
+        dcc.Store(id='sentiment-split', storage_type='memory', data=index),
+        dbc.Row([
+            dbc.Col(dcc.Checklist(id='check-sentiment', 
+                                            options=[{'label': '   Freitexte in Sätze unterteilen', 'value': 1}],
+                                            value=[],
+                                            className='checklist',
+                                            style={'margin': '5px 0 0 5px'}
+                                            ), width=2),
+            dbc.Col(width=4),
+            dbc.Col(width=6)
+        ]),
         dbc.Row([
             dbc.Col(html.Div([
                 html.P("Polaritätsbereich: ", className='card-text1', style={'font-weight': 'bold'}),
@@ -56,15 +75,45 @@ def layout(text, index):
     return children
 
 @app.callback([Output("sentiment-content", "children"),
-            Output('listOfSentiment', 'data')],
+            Output('listOfSentiment', 'data'),
+            Output('sentiment-split', 'data')],
                 [Input('pol-slider', 'value'),
-                Input('sub-slider', 'value')],
+                Input('sub-slider', 'value'),
+                Input('check-sentiment', 'value')],
                 [State('sentiment-data', 'data'),
                 State('sentiment-index', 'data')]
 )
-def get_sentiment(polvalues, subvalues, texts, index):
+def get_sentiment(polvalues, subvalues, checkbox, texts, index):
+    print(type(texts))
+    
+    # sentiment
+    list_polarity = []
+    list_subjektivity = []
+    list_countCharts = []
+    
+    df_raw = pd.DataFrame({'Index': index,
+                        'Text': texts})
+
+    if checkbox == [1]:
+        df_splited = pd.DataFrame(columns = ['Index', 'Text'])
+        for i, p in df_raw.itertuples(index=False):
+
+            sentence_token = nltk.tokenize.sent_tokenize(p)
+            print(sentence_token)
+            for t in sentence_token:
+                data = pd.DataFrame({'Index': [i], 'Text': [t]})
+                df_splited=df_splited.append(data)
+
+        unfiltered_sentences = df_splited['Text'].values.tolist()
+        
+        
+
+    
+    else:
+        unfiltered_sentences = texts
+        
     filtered_sentences = []
-    for sent in texts:
+    for sent in unfiltered_sentences:
         # tokenization
         sent_token = word_tokenize(sent)
 
@@ -88,28 +137,33 @@ def get_sentiment(polvalues, subvalues, texts, index):
         
         curr_sent = (" ").join(tokens_without_sc)
         filtered_sentences.append(curr_sent)
-    
-    
-    # sentiment
-    list_polarity = []
-    list_subjektivity = []
-    list_countCharts = []
-    
+
     for text in filtered_sentences:
         blob = TextBlob(text)
         list_polarity.append(blob.sentiment.polarity)
         list_subjektivity.append(blob.sentiment.subjectivity)
         list_countCharts.append(len(text))
+    
+    # for text in filtered_sentences:
+    #     p = round(sentModel.analyse_sentiment(text), 2)
+    #     list_polarity.append(p)
+    #     list_subjektivity.append(0)
+    #     list_countCharts.append(len(text))
 
-    df = pd.DataFrame({'Index': index,
+    if checkbox == [1]:
+        df = df_splited.copy()
+        df['Polarität'] = list_polarity
+        df['Subjektivität'] = list_subjektivity
+        df['Anzahl Zeichen'] = list_countCharts
+    
+    else:
+        df = pd.DataFrame({'Index': index,
                         'Text': texts,
                         'Polarität': list_polarity,
                         'Subjektivität': list_subjektivity,
                         'Anzahl Zeichen': list_countCharts})
-    
+
     df_output = df.copy()
-    
-    
     
     pos = []
     neu = []
@@ -122,7 +176,7 @@ def get_sentiment(polvalues, subvalues, texts, index):
 
     masksub = (df['Subjektivität'] >= sublow) & (df['Subjektivität'] <= subhigh)
     df = df[masksub]
-    print(df)
+    
     df=df.reset_index()
     for row in df.index:
         if df.iloc[row]['Polarität'] > 0:
@@ -361,5 +415,5 @@ def get_sentiment(polvalues, subvalues, texts, index):
 
     ], style={"margin" : "20px"})
 
-    return children, df_output.to_json(date_format='iso', orient='split')
+    return children, df_output.to_json(date_format='iso', orient='split'), checkbox
 

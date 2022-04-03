@@ -335,24 +335,49 @@ def showDownload(data):
             State('summary', 'data'),
             State('listOfSentiment', 'data'),
             State('choosen-col', 'value'),
+            State('sentiment-split', 'data'),
             prevent_initial_call=True,)
-def download(csv, xlsx, data, listOfTopics, summary, listOfSentiment, col):
+def download(csv, xlsx, data, listOfTopics, summary, listOfSentiment, col, checkbox):
     df = pd.read_json(data, orient='split')
     df_sent= pd.read_json(listOfSentiment, orient='split')
     df_sent=df_sent.set_index('Index')
     print(df_sent)
-    df['Summarization (' + col + ')'] = summary[0]
-    df['Polarität(' + col + ')'] = df_sent['Polarität']
-    df['Subjektivität(' + col + ')'] = df_sent['Subjektivität']
-    print(df)
 
-    cluster = df['Cluster'].values.tolist()
+    df_raw = pd.DataFrame({'Index': df.index.values.tolist(),
+                        'Text': df[col].values.tolist()})
+
+    
+    if checkbox == [1]:
+        df_splited = pd.DataFrame(columns = df.columns)
+        for i, p in df_raw.itertuples(index=False):
+
+            sentence_token = nltk.tokenize.sent_tokenize(p)
+            print(sentence_token)
+            for index in df.index.values.tolist():
+                if index == i:
+                    for t in sentence_token:
+                        data = df.loc[i]
+                        data[col]=t
+                        df_splited=df_splited.append(data)
+
+        print(df_splited)
+
+    else:
+        df_splited = df.copy()
+    
+    
+    df_splited['Summarization (' + col + ')'] = summary[0]
+    df_splited['Polarität(' + col + ')'] = df_sent['Polarität']
+    df_splited['Subjektivität(' + col + ')'] = df_sent['Subjektivität']
+    print(df_splited)
+
+    cluster = df_splited['Cluster'].values.tolist()
 
     if csv:
-        return dcc.send_data_frame(df.to_csv, "cluster"+str(cluster[0])+".csv"), None, 0, 0
+        return dcc.send_data_frame(df_splited.to_csv, "cluster"+str(cluster[0])+".csv"), None, 0, 0
     
     elif xlsx:
-        return dcc.send_data_frame(df.to_excel, "cluster"+str(cluster[0])+".xlsx", sheet_name="Cluster"), None, 0, 0
+        return dcc.send_data_frame(df_splited.to_excel, "cluster"+str(cluster[0])+".xlsx", sheet_name="Cluster"), None, 0, 0
     
     else:
         return None, None, 0,0
