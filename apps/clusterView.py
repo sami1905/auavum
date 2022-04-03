@@ -343,22 +343,20 @@ def download(csv, xlsx, data, listOfTopics, summary, listOfSentiment, col, check
     df_sent=df_sent.set_index('Index')
     print(df_sent)
 
-    df_raw = pd.DataFrame({'Index': df.index.values.tolist(),
-                        'Text': df[col].values.tolist()})
+    df_raw = pd.DataFrame({'Index': df_sent.index.values.tolist(),
+                        'Text': df_sent['Text'].tolist()})
 
     
     if checkbox == [1]:
         df_splited = pd.DataFrame(columns = df.columns)
         for i, p in df_raw.itertuples(index=False):
 
-            sentence_token = nltk.tokenize.sent_tokenize(p)
-            print(sentence_token)
+            
             for index in df.index.values.tolist():
                 if index == i:
-                    for t in sentence_token:
-                        data = df.loc[i]
-                        data[col]=t
-                        df_splited=df_splited.append(data)
+                    data = df.loc[i]
+                    data[col]=p
+                    df_splited=df_splited.append(data)
 
         print(df_splited)
 
