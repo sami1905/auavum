@@ -7,9 +7,9 @@ from app import app
 from textblob_de import TextBlobDE as TextBlob
 import pandas as pd
 import plotly.express as px
-#from functions import sentimentModel
+from functions import sentimentModel
 
-#sentModel = sentimentModel.GSBertPolarityModel()
+sentModel = sentimentModel.GSBertPolarityModel()
 
 #tokenizer
 from nltk.tokenize import word_tokenize, sent_tokenize
@@ -137,18 +137,19 @@ def get_sentiment(polvalues, subvalues, checkbox, texts, index):
         
         curr_sent = (" ").join(tokens_without_sc)
         filtered_sentences.append(curr_sent)
-
-    for text in filtered_sentences:
-        blob = TextBlob(text)
-        list_polarity.append(blob.sentiment.polarity)
-        list_subjektivity.append(blob.sentiment.subjectivity)
-        list_countCharts.append(len(text))
-    
+    #old
     # for text in filtered_sentences:
-    #     p = round(sentModel.analyse_sentiment(text), 2)
-    #     list_polarity.append(p)
-    #     list_subjektivity.append(0)
+    #     blob = TextBlob(text)
+    #     list_polarity.append(blob.sentiment.polarity)
+    #     list_subjektivity.append(blob.sentiment.subjectivity)
     #     list_countCharts.append(len(text))
+    
+    #new
+    for text in filtered_sentences:
+        p = round(sentModel.analyse_sentiment(text), 2)
+        list_polarity.append(p)
+        list_subjektivity.append(0)
+        list_countCharts.append(len(text))
 
     if checkbox == [1]:
         df = df_splited.copy()

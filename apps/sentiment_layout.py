@@ -51,7 +51,17 @@ layout=dbc.Container([
                         html.P('Lasse Dir mithilfe der Sentiment Analyse das Stimmungsbild von Freitexten einer ausgewählten Spalte ausgeben.', style={'margin-bottom': '5px'}, className='card-text1')
                     ]),width=10),
                     dbc.Col(width=1),
-                ])
+                ]),
+                dbc.Row([
+                        dbc.Col(width=11),
+                        dbc.Col(
+                            dbc.DropdownMenu([
+                                dbc.DropdownMenuItem(".CSV", id="download-5", n_clicks=0), 
+                                dbc.DropdownMenuItem(".XLSX", id="download-6", n_clicks=0)
+                            ], label="Download", group=True, id="download3", color="dark", style={'display':'None'}), width=1),
+                    ], style={'text-align':'center', 'margin':'40px 0px 0px 0px'}),
+                    dcc.Download(id="download-sent-csv"),
+                    dcc.Download(id="download-sent-xlsx"),
             ])
         ], className='deskriptiv-card'),
         
@@ -119,8 +129,67 @@ def tab_content(active_tab):
         return style2, style1
 
 
+@app.callback(Output('download3', 'style'),
+               [Input('sentiment-dropdown', 'value')])
+def showDownload(value):
+    style1 = {'display':'block'}
+    style2 = {'display':'none'}
+    if value != "-":
+        return style1
+    else:
+        return style2
+
+@app.callback([Output('download-sent-csv', 'data'),
+            Output('download-sent-xlsx', 'data'),
+            Output('download-5', 'n_clicks'),
+            Output('download-6', 'n_clicks')],
+            Input('download-5', 'n_clicks'),
+            Input('download-6', 'n_clicks'),
+            State('main_data_after_preperation', 'data'),
+            State('listOfSentiment', 'data'),
+            State('sentiment-dropdown', 'value'),
+            State('sentiment-split', 'data'),
+            prevent_initial_call=True,)
+def download(csv, xlsx, data, listOfSentiment, col, checkbox):
+    df = pd.read_json(data, orient='split')
+    df_sent= pd.read_json(listOfSentiment, orient='split')
+    df_sent=df_sent.set_index('Index')
+    print(df_sent)
+
+    df_raw = pd.DataFrame({'Index': df_sent.index.values.tolist(),
+                        'Text': df_sent['Text'].tolist()})
+
+    
+    if checkbox == [1]:
+        df_splited = pd.DataFrame(columns = df.columns)
+        for i, p in df_raw.itertuples(index=False):
+
+            
+            for index in df.index.values.tolist():
+                if index == i:
+                    data = df.loc[i]
+                    data[col]=p
+                    df_splited=df_splited.append(data)
+
+        print(df_splited)
+
+    else:
+        df_splited = df.copy()
+    
+    
+    df_splited['Polarität(' + col + ')'] = df_sent['Polarität']
+    df_splited['Subjektivität(' + col + ')'] = df_sent['Subjektivität']
+    print(df_splited)
 
 
+    if csv:
+        return dcc.send_data_frame(df_splited.to_csv, "sentiment.csv"), None, 0, 0
+    
+    elif xlsx:
+        return dcc.send_data_frame(df_splited.to_excel, "sentiment.xlsx", sheet_name="Sentiment"), None, 0, 0
+    
+    else:
+        return None, None, 0,0
 
 @app.callback([Output({'type':'errorView', 'index':8}, 'style'), Output('sentiment', 'style')],
                [Input('main_data_after_preperation', 'data'),
