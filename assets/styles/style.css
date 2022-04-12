@@ -142,11 +142,11 @@
  }
 
 
-.upload-card{
+.upload-card {
     background: white;
     border: 2px #3c4143 dashed;
     border-radius: 3px 15px 5px 30px;
-    box-shadow: 0 0 15px 1px#3c41434d;
+    box-shadow: 0 0 15px 1px #3c41434d;
     text-align: center;
 }
 
