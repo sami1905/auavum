@@ -7,9 +7,9 @@ from app import app
 from textblob_de import TextBlobDE as TextBlob
 import pandas as pd
 import plotly.express as px
-#from functions import sentimentModel
+from functions import sentimentModel
 
-#sentModel = sentimentModel.GSBertPolarityModel()
+sentModel = sentimentModel.GSBertPolarityModel()
 
 #tokenizer
 from nltk.tokenize import word_tokenize, sent_tokenize
@@ -36,6 +36,18 @@ def layout(text, index):
         dcc.Store(id='sentiment-data', storage_type='memory', data=text),
         dcc.Store(id='sentiment-index', storage_type='memory', data=index),
         dcc.Store(id='sentiment-split', storage_type='memory', data=index),
+        html.Div([
+                        html.P('Wähle ein Sentiment-Modell aus:' , className='card-text2', style={'font-weight': 'bold'}),
+                        dcc.Dropdown(id='sentmodel-dropdown', 
+                                    	    options=[{'label': 'TextBlob DE (schnell und weniger genau)', 'value': 0},
+                                            {'label': 'GSBertPolarityModel (langsam und genau)', 'value': 1}], 
+                                            value=0, 
+                                            clearable=False,
+                                            searchable=False,
+                                            multi=False,
+                                            className='dropdown')
+
+                    ], style={'text-align': 'left', 'margin': '0px, 30px'}),
         dbc.Row([
             dbc.Col(dcc.Checklist(id='check-sentiment', 
                                             options=[{'label': '   Freitexte in Sätze unterteilen', 'value': 1}],
@@ -79,11 +91,12 @@ def layout(text, index):
             Output('sentiment-split', 'data')],
                 [Input('pol-slider', 'value'),
                 Input('sub-slider', 'value'),
-                Input('check-sentiment', 'value')],
+                Input('check-sentiment', 'value'),
+                Input('sentmodel-dropdown', 'value')],
                 [State('sentiment-data', 'data'),
                 State('sentiment-index', 'data')]
 )
-def get_sentiment(polvalues, subvalues, checkbox, texts, index):
+def get_sentiment(polvalues, subvalues, checkbox, smodel, texts, index):
     print(type(texts))
     
     # sentiment
@@ -137,19 +150,23 @@ def get_sentiment(polvalues, subvalues, checkbox, texts, index):
         
         curr_sent = (" ").join(tokens_without_sc)
         filtered_sentences.append(curr_sent)
-    #old
-    for text in filtered_sentences:
-        blob = TextBlob(text)
-        list_polarity.append(blob.sentiment.polarity)
-        list_subjektivity.append(blob.sentiment.subjectivity)
-        list_countCharts.append(len(text))
+
     
-    #new
-    # for text in filtered_sentences:
-    #     p = round(sentModel.analyse_sentiment(text), 2)
-    #     list_polarity.append(p)
-    #     list_subjektivity.append(0)
-    #     list_countCharts.append(len(text))
+    if smodel == 0:
+
+        #old
+        for text in filtered_sentences:
+            blob = TextBlob(text)
+            list_polarity.append(blob.sentiment.polarity)
+            list_subjektivity.append(blob.sentiment.subjectivity)
+            list_countCharts.append(len(text))
+    else:    
+        #new
+        for text in filtered_sentences:
+            p = round(sentModel.analyse_sentiment(text), 2)
+            list_polarity.append(p)
+            list_subjektivity.append(0)
+            list_countCharts.append(len(text))
 
     if checkbox == [1]:
         df = df_splited.copy()

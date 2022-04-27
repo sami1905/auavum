@@ -33,6 +33,8 @@ from sklearn.manifold import TSNE
 
 #word tokenizer
 from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, sent_tokenize
+import nltk
 
 #lemmatization
 import spacy
@@ -52,6 +54,7 @@ german_stop_words = liste_der_unerwuenschten_woerter #+ stopwords.words('german'
 
 
 layout=dbc.Container([
+    dcc.Store(id='splitted-data', storage_type='memory'),
     dcc.Store(id='vectors', storage_type='memory'),
     dcc.Store(id='clusters', storage_type='memory'), 
     dcc.Store(id='clustered_df', storage_type='memory'),    
@@ -127,10 +130,15 @@ layout=dbc.Container([
                     dbc.Row([
                         dbc.Col(
                             html.Div([
+                                dcc.Checklist(id='check-split', 
+                                            options=[{'label': '   Freitexte in Sätze unterteilen', 'value': 1}],
+                                            value=[],
+                                            className='checklist',
+                                            style={'margin': '5px 0 0 5px'}
+                                            ),
                                 html.P("Wähle das Merkmal für die Durchführung der Clustering-Analyse:" , className="card-text2", style={"font-weight": "bold", "margin":"20px 0 10px 0"}),
                                 dcc.Dropdown(id="choosen-col", options= [{'label':'-', 'value':'-'}], value='-', searchable=False, clearable=False, className='dropdown'),
-
-                                html.Div(id="dendro", children=[], style={"margin":"20px 0"})
+                                html.Div(id="dendro", children=[], style={"margin":"20px 0"}),
                             ]), width=7),
                         dbc.Col(
                             html.Div([
@@ -210,17 +218,35 @@ def tab_content(active_tab):
     else: 
         return style2, style1
 
-@app.callback([Output('dendro', 'children'), Output('vectors', 'data')],
-            [Input('choosen-col', 'value')],
+@app.callback([Output('dendro', 'children'), Output('vectors', 'data'), Output('splitted-data', 'data')],
+            [Input('choosen-col', 'value'),
+            Input('check-split', 'value')],
             [State('main_data_after_preperation', 'data')])
-def show_dendro(col, data):
+def show_dendro(col,checkbox, data):
 
     print("Start 'show_dendro'")
     start = time.perf_counter()
     if data is not None and col != "-":
         df = pd.read_json(data, orient='split')
-        df = df.set_index(df.columns[0])
+        df_splited = pd.DataFrame(columns = df.columns)
+        if checkbox == [1]:
+            for index, row in df.iterrows():
+                text = row[col]
+                if text is not None:
+                    sentence_token = nltk.tokenize.sent_tokenize(text)
+                
+                    for t in sentence_token:
+                        data = row
+                        data[col] = t
+                        df_splited=df_splited.append(data)
+                
+            df = df_splited.copy()    
+            
+        else:
+            df = df.set_index(df.columns[0])
+        
         df = df.dropna(subset=[col])
+        
         sentences = df[col].tolist()
             
         print("Start 'transformation' after: ")
@@ -243,12 +269,12 @@ def show_dendro(col, data):
         finished = time.perf_counter()
         print(f'{round(finished-start, 2) } second(s)')
             
-        return dcc.Graph(figure=dendro), vectors
+        return dcc.Graph(figure=dendro), vectors, df.to_json(date_format='iso', orient='split')
     else:
-        return None, None
+        return None, None, None
 
 @app.callback([Output('data-info', 'children'), Output('cluster-table', 'children')],
-        Input('main_data_after_preperation', 'data'),
+        Input('splitted-data', 'data'),
         Input('clusters', 'data'),
         Input('filter-cols', 'value'),
         Input('choosen-col', 'value'),
@@ -398,7 +424,7 @@ def update_drops(data, clusters, value):
                 Output('clustered_df', 'data')],
             [Input('count_clusters', 'value'),
             Input('vectors', 'data')],
-            [State('main_data_after_preperation', 'data'),
+            [State('splitted-data', 'data'),
             State('choosen-col', 'value')])
 def show_clusters(k, vectors, data, col):
     style1 = {'display':'block'}
@@ -408,6 +434,7 @@ def show_clusters(k, vectors, data, col):
     if data is not None and col != "-":
         df = pd.read_json(data, orient='split')
         df = df.dropna(subset=[col])
+        
         if k[0] < 2:
             scatter = plot_2d(vectors, None, df.index.values.tolist())
             return None, None, dcc.Graph(figure=scatter), None, style2, None
@@ -579,7 +606,7 @@ def error2(main_data, d1, d2):
             [State('listOfFrei', 'data'),
             State('listOfFest', 'data'),
             State('listOfTopics', 'data'),
-            State('main_data_after_preperation', 'data'),
+            State('splitted-data', 'data'),
             State('clusters', 'data'),
             State('choosen-col', 'value')])
 def show_clusterview(clicks, back_clicks, listOfFrei, listOfFest, listOfTopics, data, clusters, col):
