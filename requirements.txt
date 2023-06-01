@@ -11,7 +11,7 @@ sentence_transformers==2.2.0
 spacy==3.2.3
 summarizer==0.0.7
 textblob_de==0.4.3
-torch==1.10.2
+torch==2.0.1
 umap==0.1.1
 umap_learn==0.5.2
 wordcloud==1.8.1
